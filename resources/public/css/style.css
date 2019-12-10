@@ -1,0 +1,97 @@
+body {
+  position: fixed;
+  width: 100%;
+	margin: 0;
+	font-family: 'iosevka ss05', Menlo, 'Andale Mono', monospace;
+}
+#app {
+	height: 100vh;
+}
+.chess {
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	padding: 48px 1em 1em;
+	box-sizing: border-box;
+}
+.board-container {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+@media (min-width: 768px) {
+	.board-container {
+		padding: 1em 0;
+	}
+}
+.board {
+	position: relative;
+	align-self: center;
+	display: grid;
+	width: 100%;
+	max-width: 54vh;
+	margin: 0 auto;
+	grid-template-columns: repeat(8, 12.5%);
+	transition: opacity 1s cubic-bezier(0.3, 0.8, 0.1, 0.95);
+}
+@media (min-width: 480px) {
+	.board {
+		width: 80%;
+	}
+}
+@media (min-width: 768px) {
+	.board {
+		width: 90%;
+		max-width: 72vh;
+	}
+}
+.square {
+	position: relative;
+	height: 0;
+	padding-bottom: 100%;
+}
+.square.dark {
+	position: relative;
+}
+.square:before,
+.square:after {
+	content: '';
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	transition: all 0.1s cubic-bezier(0.3, 0.8, 0.1, 0.95);
+}
+.square:before {
+	margin: 1px;
+}
+.square:after {
+	opacity: 0;
+	margin: 3px;
+	border: 3px solid #eee;
+}
+.square.dark:after {
+	border-color: #fff;
+}
+.square.dark:before {
+	background: repeating-linear-gradient(
+		-45deg,
+		#e2e2e2,
+		#e2e2e2 2px,
+		#fff 2px,
+		#fff 5px
+	);
+}
+.piece-container {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
