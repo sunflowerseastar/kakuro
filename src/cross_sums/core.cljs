@@ -4,9 +4,6 @@
    [cross-sums.helpers :refer [get-options]]
    [reagent.core :as reagent :refer [atom create-class]]))
 
-(defn gen-options [n]
-  (for [x (range 0 10) y (range 0 10) :when (= (+ x y) n)] [x y]))
-
 (defn generate-board []
   [[{:type :black}
     {:type :summands :down 4 :down-options (get-options 4 2)}
