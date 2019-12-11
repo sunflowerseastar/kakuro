@@ -6,10 +6,12 @@
 
 (defn generate-board []
   [[{:type :black}
-    {:type :summands :down 4 :down-options (get-options 4 2)}
-    {:type :summands :down 6 :down-options (get-options 6 2)}]
-   [{:type :summands :right 3 :right-options (get-options 3 2)} {:type :entry} {:type :entry}]
-   [{:type :summands :right 7 :right-options (get-options 7 2)} {:type :entry} {:type :entry}]])
+    {:type :summands :down 3 :down-options (get-options 3 2)}
+    {:type :summands :down 5 :down-options (get-options 5 2)}
+    {:type :summands :down 1 :down-options (get-options 1 2)}
+    ]
+   [{:type :summands :right 3 :right-options (get-options 3 3)} {:type :entry} {:type :entry} {:type :entry}]
+   [{:type :summands :right 6 :right-options (get-options 6 3)} {:type :entry} {:type :entry} {:type :entry}]])
 
 (def board (atom (generate-board)))
 
@@ -80,7 +82,7 @@
                       (zero? y-distance)
                       (let [prev-val (:value (get-square b (dec x) y))
                             val-that-matches-from-right-options (get (first (filter #(= (first %) prev-val) right-options)) x-distance)]
-                        (do (println "entry x-only")
+                        (do (println "entry x-only ::" right-options x-distance)
                             (recur new-x new-y (assoc-in b [y x :value] val-that-matches-from-right-options))))
                       (zero? x-distance)
                       (let [prev-val (:value (get-square b x (dec y)))
