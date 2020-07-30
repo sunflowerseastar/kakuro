@@ -6,8 +6,8 @@
 
   :min-lein-version "2.7.1"
 
-  :dependencies [[org.clojure/clojure "1.9.0"]
-                 [org.clojure/clojurescript "1.10.520"]
+  :dependencies [[org.clojure/clojure "1.10.0"]
+                 [org.clojure/clojurescript "1.10.764"]
                  [org.clojure/core.logic "1.0.0"]
                  [tupelo "0.9.201"]
                  [reagent "0.8.1"]]
