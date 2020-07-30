@@ -12,7 +12,6 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 48px 1em 1em;
   box-sizing: border-box;
 }
 .board-container {
@@ -20,6 +19,27 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.button-container {
+  text-align: center;
+  padding-bottom: 10vh;
+}
+button {
+  position: relative;
+  padding: 3vw 8vw;
+  font-family: monospace;
+  font-weight: bold;
+  color: white;
+  background: #222;
+  box-shadow: 0;
+  border: 2px solid transparent;
+  outline: none;
+}
+button:hover {
+  top: -1px;
+}
+button:active {
+  top: 0px;
 }
 @media (min-width: 768px) {
   .board-container {
@@ -33,6 +53,7 @@ body {
   width: 100%;
   max-width: 54vh;
   margin: 0 auto;
+  border: 1px solid #222;
 }
 @media (min-width: 480px) {
   .board {
@@ -49,17 +70,57 @@ body {
   position: relative;
   height: 0;
   padding-bottom: 100%;
-  border: 1px solid #ddd;
+}
+.square.black {
+  border: 1px solid transparent;
+}
+.square.flag {
+  position: relative;
+  border: 1px solid #3b3b3b;
+
+  overflow: hidden;
+  /* z-index: 2; */
+}
+.square.flag:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 100vh solid transparent;
+  border-right: 100vh solid transparent;
+  border-top: 100vh solid #666;
+  /* z-index: 1; */
+  pointer-events: none;
+}
+.square.flag:after {
+  pointer-events: none;
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 2px;
+  width: 0;
+  height: 0;
+  border-left: 100vh solid transparent;
+  border-right: 100vh solid transparent;
+  border-top: 100vh solid #222;
+  /* z-index: 1; */
+}
+.square.entry {
+  border: 0.5px solid #ddd;
 }
 .black {
-  background: black;
+  background: #222;
 }
 .flag {
-  background: #ddd;
+  background: #222;
+  color: white;
 }
 .sum {
   position: absolute;
   font-size: 24px;
+  z-index: 1;
 }
 .sum.right {
   right: 13px;

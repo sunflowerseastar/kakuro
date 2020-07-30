@@ -70,14 +70,12 @@
                                ^{:key (str x y)}
                                [square-c x y square])
                              row))
-                          @board)]]])}))
+                          @board)]]
+                       [:div.button-container
+                        [:button "solve"]]])}))
 
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]
     (reagent/render-component [main] el)))
 
 (mount-app-element)
-
-(defn ^:after-load on-reload []
-  ;; (mount-app-element)
-  )
