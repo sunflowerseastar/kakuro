@@ -6,17 +6,14 @@
 
 (defn generate-board []
   [[{:type :black :x 0 :y 0}
-    {:type :flag :x 1 :y 0 :flags #{{:direction :down :sum 3}}}
-    {:type :flag :x 2 :y 0 :flags #{{:direction :down :sum 5}}}
-    {:type :flag :x 3 :y 0 :flags #{{:direction :down :sum 1}}}]
-   [{:type :flag :x 0 :y 1 :flags #{{:direction :right :sum 3}}}
+    {:type :flag :x 1 :y 0 :flags #{{:direction :down :sum 4 :distance 2}}}
+    {:type :flag :x 2 :y 0 :flags #{{:direction :down :sum 6 :distance 2}}}]
+   [{:type :flag :x 0 :y 1 :flags #{{:direction :right :sum 3 :distance 2}}}
     {:type :entry :x 1 :y 1}
-    {:type :entry :x 2 :y 1}
-    {:type :entry :x 3 :y 1}]
-   [{:type :flag :x 0 :y 2 :flags #{{:direction :right :sum 6}}}
+    {:type :entry :x 2 :y 1}]
+   [{:type :flag :x 0 :y 2 :flags #{{:direction :right :sum 7 :distance 2}}}
     {:type :entry :x 1 :y 2}
-    {:type :entry :x 2 :y 2}
-    {:type :entry :x 3 :y 2}]])
+    {:type :entry :x 2 :y 2}]])
 
 (def board (atom (generate-board)))
 
