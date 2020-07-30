@@ -8,6 +8,8 @@
 
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/clojurescript "1.10.520"]
+                 [org.clojure/core.logic "1.0.0"]
+                 [tupelo "0.9.201"]
                  [reagent "0.8.1"]]
 
   :source-paths ["src"]
@@ -17,7 +19,7 @@
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
             "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "cross-sums.test-runner"]}
 
-  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.3"]
-                                  [com.bhauman/rebel-readline-cljs "0.1.4"]]
-                   }})
+  :repl-options {:init-ns cross-sums.core}
 
+  :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.3"]
+                                  [com.bhauman/rebel-readline-cljs "0.1.4"]]}})
