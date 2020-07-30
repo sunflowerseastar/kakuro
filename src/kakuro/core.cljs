@@ -1,5 +1,6 @@
-(ns ^:figwheel-hooks cross-sums.core
+(ns ^:figwheel-hooks kakuro.core
   (:require
+   [ajax.core :refer [POST]]
    [goog.dom :as gdom]
    [tupelo.core :refer [spyx]]
    [reagent.core :as reagent :refer [atom create-class]]))
@@ -57,6 +58,17 @@
          (= type :entry)
          [:span.piece-container (:value square)])])
 
+;; TODO send something like f1: '([:d 1 0 4 2] [:d 2 0 6 2] [:r 0 1 3 2] [:r 0 2 7 2])
+(defn send-m [req]
+  (spyx "send-m" req)
+  (POST "http://localhost:3001/json"
+        {:format :json
+         :headers {"Accept" "application/transit+json"}
+         :params x
+         ;; TODO receive solver solution, update board with it
+         :handler #(.log js/console (str "response: " %))
+         :error-handler #(.error js/console (str "error: " %))}))
+
 (defn main []
   (create-class
    {:reagent-render (fn [this]
@@ -72,7 +84,7 @@
                              row))
                           @board)]]
                        [:div.button-container
-                        [:button "solve"]]])}))
+                        [:button {:on-click #(send-m [1 2 3])} "solve"]]])}))
 
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]
