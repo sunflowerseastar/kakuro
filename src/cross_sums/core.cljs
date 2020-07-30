@@ -77,18 +77,17 @@
                           (fn [y row]
                             (map-indexed
                              (fn [x square]
+                               ^{:key (str x y)}
                                [square-c x y square])
                              row))
                           @board)]]])}))
 
-(defn mount [el]
-  (reagent/render-component [main] el))
-
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]
-    (mount el)))
+    (reagent/render-component [main] el)))
 
 (mount-app-element)
 
 (defn ^:after-load on-reload []
-  (mount-app-element))
+  ;; (mount-app-element)
+  )
