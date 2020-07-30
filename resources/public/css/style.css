@@ -1,89 +1,88 @@
 body {
-	position: fixed;
-	width: 100%;
-	margin: 0;
-	font-family: 'iosevka ss05', Menlo, 'Andale Mono', monospace;
+  position: fixed;
+  width: 100%;
+  margin: 0;
+  font-family: 'iosevka ss05', Menlo, 'Andale Mono', monospace;
 }
 #app {
-	height: 100vh;
+  height: 100vh;
 }
 .main {
-	height: 100vh;
-	display: flex;
-	flex-direction: column;
-	justify-content: flex-end;
-	padding: 48px 1em 1em;
-	box-sizing: border-box;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 48px 1em 1em;
+  box-sizing: border-box;
 }
 .board-container {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 @media (min-width: 768px) {
-	.board-container {
-		padding: 1em 0;
-	}
+  .board-container {
+    padding: 1em 0;
+  }
 }
 .board {
-	position: relative;
-	align-self: center;
-	display: grid;
-	width: 100%;
-	max-width: 54vh;
-	margin: 0 auto;
+  position: relative;
+  align-self: center;
+  display: grid;
+  width: 100%;
+  max-width: 54vh;
+  margin: 0 auto;
 }
 @media (min-width: 480px) {
-	.board {
-		width: 80%;
-	}
+  .board {
+    width: 80%;
+  }
 }
 @media (min-width: 768px) {
-	.board {
-		width: 90%;
-		max-width: 72vh;
-	}
+  .board {
+    width: 90%;
+    max-width: 72vh;
+  }
 }
 .square {
-	position: relative;
-	height: 0;
-	padding-bottom: 100%;
-	border: 1px solid #ddd;
+  position: relative;
+  height: 0;
+  padding-bottom: 100%;
+  border: 1px solid #ddd;
 }
 .black {
-	background: black;
+  background: black;
 }
-.summands {
-	background: #ddd;
+.flag {
+  background: #ddd;
 }
-.summand-right,
-.summand-down {
-	position: absolute;
-	font-size: 24px;
+.sum {
+  position: absolute;
+  font-size: 24px;
 }
-.summand-right {
-	right: 13px;
-	top: 50%;
-	transform: translateY(-50%);
+.sum.right {
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
 }
-.summand-down {
-	bottom: 10px;
-	width: 100%;
-	left: 0;
-	margin: 0 auto;
-	text-align: center;
+.sum.down {
+  bottom: 10px;
+  width: 100%;
+  left: 0;
+  margin: 0 auto;
+  text-align: center;
 }
 .entry {
 }
 .piece-container {
-	position: absolute;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   text-align: center;
 }

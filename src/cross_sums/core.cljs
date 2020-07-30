@@ -5,12 +5,18 @@
    [reagent.core :as reagent :refer [atom create-class]]))
 
 (defn generate-board []
-  [[{:type :black}
-    {:type :flag :down 3}
-    {:type :flag :down 5}
-    {:type :flag :down 1}]
-   [{:type :flag :right 3} {:type :entry} {:type :entry} {:type :entry}]
-   [{:type :flag :right 6} {:type :entry} {:type :entry} {:type :entry}]])
+  [[{:type :black :x 0 :y 0}
+    {:type :flag :x 1 :y 0 :flags #{{:direction :down :sum 3}}}
+    {:type :flag :x 2 :y 0 :flags #{{:direction :down :sum 5}}}
+    {:type :flag :x 3 :y 0 :flags #{{:direction :down :sum 1}}}]
+   [{:type :flag :x 0 :y 1 :flags #{{:direction :right :sum 3}}}
+    {:type :entry :x 1 :y 1}
+    {:type :entry :x 2 :y 1}
+    {:type :entry :x 3 :y 1}]
+   [{:type :flag :x 0 :y 2 :flags #{{:direction :right :sum 6}}}
+    {:type :entry :x 1 :y 2}
+    {:type :entry :x 2 :y 2}
+    {:type :entry :x 3 :y 2}]])
 
 (def board (atom (generate-board)))
 
@@ -28,21 +34,6 @@
       (if (= (:type sq) :flag) sq
           (recur x (dec y))))))
 
-(defn get-right-flag-2 [b x y]
-  (loop [x x y y n 0]
-    (let [sq (get-square b (dec x) y)]
-      (if (= (:type sq) :flag)
-        ;; (update-in sq [:right-options] #(map (fn [x] (get x 1)) %))
-        (set (map #(get % n) (:right-options sq)))
-        (recur (dec x) y (inc n))))))
-
-(defn get-down-flag-2 [b x y]
-  (loop [x x y y n 0]
-    (let [sq (get-square b x (dec y))]
-      (if (= (:type sq) :flag)
-        (set (map #(get % n) (:down-options sq)))
-        (recur x (dec y) (inc n))))))
-
 (defn x-distance-from-summand [b x y]
   (loop [x x y y n 0]
     (let [sq (get-square b (dec x) y)]
@@ -55,17 +46,19 @@
       (if (= (:type sq) :flag) n
           (recur x (dec y) (inc n))))))
 
-(defn square-c [x y square]
-  (let [type (:type square)]
-    [:div.square
-     {:class type
-      :style {:grid-column (+ x 1) :grid-row (+ y 1)}}
-     (cond (= type :flag)
-           [:div
-            [:span.summand-right (:right square)]
-            [:span.summand-down (:down square)]]
-           (= type :entry)
-           [:span.piece-container (:value square)])]))
+(defn square-c [x y {:keys [flags type] :as square}]
+  [:div.square
+   {:class type
+    :style {:grid-column (+ x 1) :grid-row (+ y 1)}}
+   (cond (= type :flag)
+         (->> flags
+              (map (fn [{:keys [direction sum] :as flag}]
+                     [:span.sum
+                      {:key (str x y)
+                       :class (name direction)}
+                      sum])))
+         (= type :entry)
+         [:span.piece-container (:value square)])])
 
 (defn main []
   (create-class
