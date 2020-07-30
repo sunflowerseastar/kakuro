@@ -24,9 +24,14 @@ body {
   text-align: center;
   padding-bottom: 10vh;
 }
+@media (min-width: 768px) {
+  .button-container {
+    padding: 2vh 0 8vh;
+  }
+}
 button {
   position: relative;
-  padding: 3vw 8vw;
+  padding: 1.4em 4.6em;
   font-family: monospace;
   font-weight: bold;
   color: white;
@@ -81,31 +86,24 @@ button:active {
   overflow: hidden;
   /* z-index: 2; */
 }
-.square.flag:before {
-  content: "";
+.square.flag:before,
+.square.flag:after {
+  content: '';
   position: absolute;
   top: 0;
-  left: 0;
   width: 0;
   height: 0;
+  pointer-events: none;
   border-left: 100vh solid transparent;
   border-right: 100vh solid transparent;
+}
+.square.flag:before {
+  left: 0;
   border-top: 100vh solid #666;
-  /* z-index: 1; */
-  pointer-events: none;
 }
 .square.flag:after {
-  pointer-events: none;
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 2px;
-  width: 0;
-  height: 0;
-  border-left: 100vh solid transparent;
-  border-right: 100vh solid transparent;
+  left: 1px;
   border-top: 100vh solid #222;
-  /* z-index: 1; */
 }
 .square.entry {
   border: 0.5px solid #ddd;
