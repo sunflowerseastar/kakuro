@@ -15,36 +15,12 @@ body {
   box-sizing: border-box;
 }
 .board-container {
+  width: 90vw;
+  margin: 0 auto;
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-.button-container {
-  text-align: center;
-  padding-bottom: 10vh;
-}
-@media (min-width: 768px) {
-  .button-container {
-    padding: 2vh 0 8vh;
-  }
-}
-button {
-  position: relative;
-  padding: 1.4em 4.6em;
-  font-family: monospace;
-  font-weight: bold;
-  color: white;
-  background: #222;
-  box-shadow: 0;
-  border: 2px solid transparent;
-  outline: none;
-}
-button:hover {
-  top: -1px;
-}
-button:active {
-  top: 0px;
 }
 @media (min-width: 768px) {
   .board-container {
@@ -53,11 +29,10 @@ button:active {
 }
 .board {
   position: relative;
-  align-self: center;
   display: grid;
-  min-width: 24vh;
-  max-width: 54vh;
+  width: 100%;
   margin: 0 auto;
+  text-align: center;
   border: 1px solid #222;
 }
 @media (min-width: 480px) {
@@ -67,8 +42,12 @@ button:active {
 }
 @media (min-width: 768px) {
   .board {
-    max-width: 90%;
-    max-width: 72vh;
+    max-width: 70%;
+  }
+}
+@media (min-width: 768px) {
+  .board {
+    max-width: 62vh;
   }
 }
 .square {
@@ -160,4 +139,31 @@ button:active {
   flex-direction: column;
   justify-content: center;
   text-align: center;
+}
+
+.button-container {
+  text-align: center;
+  padding: 4vh 0 10vh;
+}
+@media (min-width: 768px) {
+  .button-container {
+    padding: 2vh 0 8vh;
+  }
+}
+button {
+  position: relative;
+  padding: 1.4em 4.6em;
+  font-family: monospace;
+  font-weight: bold;
+  color: white;
+  background: #222;
+  box-shadow: 0;
+  border: 2px solid transparent;
+  outline: none;
+}
+button:hover {
+  top: -1px;
+}
+button:active {
+  top: 0px;
 }

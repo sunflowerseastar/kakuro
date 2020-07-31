@@ -53,3 +53,9 @@
         new-rows (vec (for [x (range 0 x-shape)]
                         (assoc {:type :black :y (count board)} :x x)))]
     (append board new-rows)))
+
+(defn decrease-board-size [board]
+  (->> board board->remove-row board->remove-column))
+
+(defn increase-board-size [board]
+  (->> board board->add-row board->add-column))

@@ -91,10 +91,10 @@
               (spyx (.-keyCode e))
               (cond is-c (clear-board!)
                     (or is-enter is-s) (request-solution (board->flags-to-be-solved @board))
-                    is-up (when (> height 3) (reset-board! (util/board->remove-row @board)))
-                    is-down (when (< height 14) (reset-board! (util/board->add-row @board)))
-                    is-left (when (> width 3) (reset-board! (util/board->remove-column @board)))
-                    is-right (when (< width 14) (reset-board! (util/board->add-column @board))))))]
+                    is-up (when (> height 3) (reset-board! (util/decrease-board-size @board)))
+                    is-down (when (< height 14) (reset-board! (util/increase-board-size @board)))
+                    is-left (when (> width 3) (reset-board! (util/decrease-board-size @board)))
+                    is-right (when (< width 14) (reset-board! (util/increase-board-size @board))))))]
     (create-class
      {:component-did-mount (fn [] (.addEventListener js/document "keydown" keyboard-listeners))
       :reagent-render
