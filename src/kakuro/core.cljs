@@ -111,23 +111,35 @@
   (->> board (mapcat (partial filter-by-type :entry))))
 
 (defn main []
-  (create-class
-   {:reagent-render
-    (fn [this]
-      [:div.main
-       [:div.board-container
-        [:div.board
-         (map-indexed
-          (fn [y row]
-            (map-indexed
-             (fn [x square]
-               ^{:key (str x y)}
-               [square-c x y square])
-             row))
-          @board)]]
-       [:div.button-container
-        [:button {:on-click #(on-click-solve (board->flags-to-be-solved @board))}
-         "solve"]]])}))
+  (letfn [(keyboard-listeners [e]
+            (let [is-enter (= (.-keyCode e) 13)
+                  is-up (= (.-keyCode e) 38)
+                  is-down (= (.-keyCode e) 40)
+                  is-left (= (.-keyCode e) 37)
+                  is-right (= (.-keyCode e) 39)]
+              (cond is-enter (spyx "enter")
+                    is-up (spyx "up")
+                    is-down (spyx "down")
+                    is-left (spyx "left")
+                    is-right (spyx "right"))))]
+    (create-class
+     {:component-did-mount (fn [] (.addEventListener js/document "keydown" keyboard-listeners))
+      :reagent-render
+      (fn [this]
+        [:div.main
+         [:div.board-container
+          [:div.board
+           (map-indexed
+            (fn [y row]
+              (map-indexed
+               (fn [x square]
+                 ^{:key (str x y)}
+                 [square-c x y square])
+               row))
+            @board)]]
+         [:div.button-container
+          [:button {:on-click #(on-click-solve (board->flags-to-be-solved @board))}
+           "solve"]]])})))
 
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]
