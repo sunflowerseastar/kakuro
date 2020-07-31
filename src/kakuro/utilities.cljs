@@ -39,7 +39,7 @@
          (partition x-shape))))
 
 (defn board->remove-column [board]
-  (map butlast board))
+  (mapv (comp vec butlast) board))
 
 (defn board->add-column [board]
   (let [x-shape (-> board first count)]
@@ -55,7 +55,7 @@
     (append board new-rows)))
 
 (defn decrease-board-size [board]
-  (->> board board->remove-row board->remove-column))
+  (->> board board->remove-row board->remove-column vec))
 
 (defn increase-board-size [board]
-  (->> board board->add-row board->add-column))
+  (->> board board->add-row board->add-column vec))

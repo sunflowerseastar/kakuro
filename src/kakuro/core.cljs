@@ -33,9 +33,10 @@
   (let [clear-values (fn [squares] (->> squares (map #(assoc % :value nil))))]
     (reset-board! (->> @board (map clear-values)))))
 
-(defn square-c [x y {:keys [flags type] :as square}]
+(defn square-c [x y {:keys [flags type] :as square} click-fn]
   [:div.square
    {:class type
+    :on-click #(click-fn x y square)
     :style {:grid-column (+ x 1) :grid-row (+ y 1)}}
    (cond (= type :flag)
          (->> flags
@@ -77,6 +78,16 @@
   [board]
   (->> board (mapcat (partial filter-by-type :entry))))
 
+(defn change-square! [x y new-type]
+  (swap! board assoc-in [y x] {:type new-type :value nil}))
+
+(defn on-click-square [x y {:keys [type]}]
+  (spyx x y type)
+  (cond (= type :entry)
+        (change-square! x y :black)
+        (= type :black)
+        (change-square! x y :entry)))
+
 (defn main []
   (letfn [(keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
@@ -88,7 +99,6 @@
                   is-right (= (.-keyCode e) 39)
                   height (count @board)
                   width (-> @board first count)]
-              (spyx (.-keyCode e))
               (cond is-c (clear-board!)
                     (or is-enter is-s) (request-solution (board->flags-to-be-solved @board))
                     is-up (when (> height 3) (reset-board! (util/decrease-board-size @board)))
@@ -107,7 +117,7 @@
               (map-indexed
                (fn [x square]
                  ^{:key (str x y)}
-                 [square-c x y square])
+                 [square-c x y square on-click-square])
                row))
             @board)]]
          [:div.button-container
