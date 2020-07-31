@@ -65,12 +65,17 @@
          (= type :entry)
          [:span.piece-container (:value square)])])
 
+(defn update-board! [solution]
+  (spyx solution (:solution solution))
+  )
+
 (defn on-click-solve [flags-to-be-solved]
   (POST "http://localhost:3001/solve"
         {:headers {"content-type" "application/edn"}
          :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
          ;; TODO receive solver solution, update board with it
-         :handler #(.log js/console (str "response: " %))
+         :handler #(update-board! %)
+         ;; :handler (.log js/console (str "response: " %))
          :error-handler #(.error js/console (str "error: " %))}))
 
 (defn rows->flag-squares
