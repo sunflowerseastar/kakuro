@@ -2,6 +2,7 @@
   (:require
    [ajax.core :refer [POST]]
    [goog.dom :as gdom]
+   [kakuro.utilities :as util]
    [tupelo.core :refer [spyx]]
    [reagent.core :as reagent :refer [atom create-class]]))
 
@@ -32,32 +33,6 @@
   (let [clear-values (fn [squares] (->> squares (map #(assoc % :value nil))))]
     (reset-board! (->> @board (map clear-values)))))
 
-(defn get-square [b x y] (get (get b y) x))
-
-(defn get-right-flag [b x y]
-  (loop [x x y y]
-    (let [sq (get-square b (dec x) y)]
-      (if (= (:type sq) :flag) sq
-          (recur (dec x) y)))))
-
-(defn get-down-flag [b x y]
-  (loop [x x y y]
-    (let [sq (get-square b x (dec y))]
-      (if (= (:type sq) :flag) sq
-          (recur x (dec y))))))
-
-(defn x-distance-from-summand [b x y]
-  (loop [x x y y n 0]
-    (let [sq (get-square b (dec x) y)]
-      (if (= (:type sq) :flag) n
-          (recur (dec x) y (inc n))))))
-
-(defn y-distance-from-summand [b x y]
-  (loop [x x y y n 0]
-    (let [sq (get-square b x (dec y))]
-      (if (= (:type sq) :flag) n
-          (recur x (dec y) (inc n))))))
-
 (defn square-c [x y {:keys [flags type] :as square}]
   [:div.square
    {:class type
@@ -72,22 +47,11 @@
          (= type :entry)
          [:span.piece-container (:value square)])])
 
-(defn board-solution->board-with-solutions [board solution]
-  (let [x-shape (count (first board))
-        board-flattened (flatten board)]
-    (->> (loop [squares board-flattened acc [] n 0]
-           (if (or (= n (count solution)) (empty? squares)) acc
-               (let [b (first squares)]
-                 (if (= (:type b) :entry)
-                   (recur (rest squares) (conj acc (assoc b :value (nth solution n))) (inc n))
-                   (recur (rest squares) (conj acc b) n)))))
-         (partition x-shape))))
-
 (defn request-solution [flags-to-be-solved]
   (POST "http://localhost:3001/solve"
         {:headers {"content-type" "application/edn"}
          :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
-         :handler #(reset-board! (board-solution->board-with-solutions @board (:solution %)))
+         :handler #(reset-board! (util/board-solution->board-with-solutions @board (:solution %)))
          :error-handler #(.error js/console (str "error: " %))}))
 
 (defn filter-by-type
