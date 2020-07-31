@@ -55,19 +55,19 @@ button:active {
   position: relative;
   align-self: center;
   display: grid;
-  width: 100%;
+  min-width: 24vh;
   max-width: 54vh;
   margin: 0 auto;
   border: 1px solid #222;
 }
 @media (min-width: 480px) {
   .board {
-    width: 80%;
+    max-width: 80%;
   }
 }
 @media (min-width: 768px) {
   .board {
-    width: 90%;
+    max-width: 90%;
     max-width: 72vh;
   }
 }
@@ -82,9 +82,7 @@ button:active {
 .square.flag {
   position: relative;
   border: 1px solid #3b3b3b;
-
   overflow: hidden;
-  /* z-index: 2; */
 }
 .square.flag:before,
 .square.flag:after {
@@ -117,20 +115,38 @@ button:active {
 }
 .sum {
   position: absolute;
-  font-size: 24px;
+  font-size: 14px;
   z-index: 1;
 }
+@media (min-width: 768px) {
+  .sum {
+    font-size: 16px;
+  }
+}
+@media (min-width: 1200px) {
+  .sum {
+    font-size: 18px;
+  }
+}
 .sum.right {
-  right: 13px;
+  right: 3px;
   top: 50%;
   transform: translateY(-50%);
 }
 .sum.down {
-  bottom: 10px;
+  bottom: 1px;
   width: 100%;
   left: 0;
   margin: 0 auto;
   text-align: center;
+}
+@media (min-width: 1200px) {
+  .sum.right {
+    right: 10px;
+  }
+  .sum.down {
+    bottom: 6px;
+  }
 }
 .entry {
 }

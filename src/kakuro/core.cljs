@@ -69,20 +69,21 @@
 
 (defn main []
   (create-class
-   {:reagent-render (fn [this]
-                      [:div.main
-                       [:div.board-container
-                        [:div.board
-                         (map-indexed
-                          (fn [y row]
-                            (map-indexed
-                             (fn [x square]
-                               ^{:key (str x y)}
-                               [square-c x y square])
-                             row))
-                          @board)]]
-                       [:div.button-container
-                        [:button {:on-click #(on-click-solve [1 2 3])} "solve"]]])}))
+   {:reagent-render
+    (fn [this]
+      [:div.main
+       [:div.board-container
+        [:div.board
+         (map-indexed
+          (fn [y row]
+            (map-indexed
+             (fn [x square]
+               ^{:key (str x y)}
+               [square-c x y square])
+             row))
+          @board)]]
+       [:div.button-container
+        [:button {:on-click #(on-click-solve [1 2 3])} "solve"]]])}))
 
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]
