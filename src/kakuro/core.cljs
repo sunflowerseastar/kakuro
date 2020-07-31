@@ -58,13 +58,11 @@
          (= type :entry)
          [:span.piece-container (:value square)])])
 
-;; TODO send something like f1: '([:d 1 0 4 2] [:d 2 0 6 2] [:r 0 1 3 2] [:r 0 2 7 2])
-(defn send-m [req]
-  (POST "http://localhost:3001/json"
-        {:headers {"content-type" "application/edn"
-                   "accept" "application/transit+json"}
-         ;; TODO send flags how server solver wants them
-         :body "{:message 1 :user 3}"
+(defn on-click-solve [req]
+  (POST "http://localhost:3001/solve"
+        {:headers {"content-type" "application/edn"}
+         ;; TODO convert existing board to flags
+         :body "{:flags [[:d 1 0 4 2] [:d 2 0 6 2] [:r 0 1 3 2] [:r 0 2 7 2]]}"
          ;; TODO receive solver solution, update board with it
          :handler #(.log js/console (str "response: " %))
          :error-handler #(.error js/console (str "error: " %))}))
@@ -84,7 +82,7 @@
                              row))
                           @board)]]
                        [:div.button-container
-                        [:button {:on-click #(send-m [1 2 3])} "solve"]]])}))
+                        [:button {:on-click #(on-click-solve [1 2 3])} "solve"]]])}))
 
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]
