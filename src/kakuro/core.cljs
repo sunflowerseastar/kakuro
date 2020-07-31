@@ -78,10 +78,10 @@
          ;; :handler (.log js/console (str "response: " %))
          :error-handler #(.error js/console (str "error: " %))}))
 
-(defn rows->flag-squares
+(defn filter-by-type
   "Takes a row of squares, returns {:type :flag} ones."
-  [xs]
-  (filter #(= (:type %) :flag) xs))
+  [type xs]
+  (filter #(= (:type %) type) xs))
 
 (defn flag-square->flags-to-be-solved
   "ex. {:type :flag, :x 1, :y 0, :flags #{{:direction :down, :sum 4, :distance 2}}} -> ([:d 1 0 4 2])"
@@ -94,7 +94,7 @@
 (defn board->flags-to-be-solved
   [board]
   (->> board
-       (mapcat rows->flag-squares)
+       (mapcat (partial filter-by-type :flag))
        (mapv flag-square->flags-to-be-solved)))
 
 (defn main []
