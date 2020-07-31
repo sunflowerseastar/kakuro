@@ -25,6 +25,13 @@
 
 (def board (atom (generate-board)))
 
+(defn reset-board! [new-board]
+  (reset! board new-board))
+
+(defn clear-board! []
+  (let [clear-values (fn [squares] (->> squares (map #(assoc % :value nil))))]
+    (reset-board! (->> @board (map clear-values)))))
+
 (defn get-square [b x y] (get (get b y) x))
 
 (defn get-right-flag [b x y]
@@ -76,15 +83,11 @@
                    (recur (rest squares) (conj acc b) n)))))
          (partition x-shape))))
 
-(defn update-board! [solution]
-  (let [board-with-solutions (board-solution->board-with-solutions @board solution)]
-    (reset! board board-with-solutions)))
-
-(defn on-click-solve [flags-to-be-solved]
+(defn request-solution [flags-to-be-solved]
   (POST "http://localhost:3001/solve"
         {:headers {"content-type" "application/edn"}
          :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
-         :handler #(update-board! (:solution %))
+         :handler #(reset-board! (board-solution->board-with-solutions @board (:solution %)))
          :error-handler #(.error js/console (str "error: " %))}))
 
 (defn filter-by-type
@@ -113,11 +116,16 @@
 (defn main []
   (letfn [(keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
+                  is-c (= (.-keyCode e) 67)
+                  is-s (= (.-keyCode e) 83)
                   is-up (= (.-keyCode e) 38)
                   is-down (= (.-keyCode e) 40)
                   is-left (= (.-keyCode e) 37)
                   is-right (= (.-keyCode e) 39)]
+              (spyx (.-keyCode e))
               (cond is-enter (spyx "enter")
+                    is-c (clear-board!)
+                    is-s (request-solution (board->flags-to-be-solved @board))
                     is-up (spyx "up")
                     is-down (spyx "down")
                     is-left (spyx "left")
@@ -138,7 +146,7 @@
                row))
             @board)]]
          [:div.button-container
-          [:button {:on-click #(on-click-solve (board->flags-to-be-solved @board))}
+          [:button {:on-click #(request-solution (board->flags-to-be-solved @board))}
            "solve"]]])})))
 
 (defn mount-app-element []
