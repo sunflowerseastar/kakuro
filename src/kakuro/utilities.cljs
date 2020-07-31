@@ -1,4 +1,5 @@
-(ns kakuro.utilities)
+(ns kakuro.utilities
+  (:require [tupelo.core :refer [append]]))
 
 (defn get-square [b x y] (get (get b y) x))
 
@@ -36,3 +37,19 @@
                    (recur (rest squares) (conj acc (assoc b :value (nth solution n))) (inc n))
                    (recur (rest squares) (conj acc b) n)))))
          (partition x-shape))))
+
+(defn board->remove-column [board]
+  (map butlast board))
+
+(defn board->add-column [board]
+  (let [x-shape (-> board first count)]
+    (map-indexed #(append %2 {:type :black :x x-shape :y %1}) board)))
+
+(defn board->remove-row [board]
+  (butlast board))
+
+(defn board->add-row [board]
+  (let [x-shape (-> board first count)
+        new-rows (vec (for [x (range 0 x-shape)]
+                        (assoc {:type :black :y (count board)} :x x)))]
+    (append board new-rows)))

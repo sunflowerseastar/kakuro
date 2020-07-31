@@ -85,15 +85,16 @@
                   is-up (= (.-keyCode e) 38)
                   is-down (= (.-keyCode e) 40)
                   is-left (= (.-keyCode e) 37)
-                  is-right (= (.-keyCode e) 39)]
+                  is-right (= (.-keyCode e) 39)
+                  height (count @board)
+                  width (-> @board first count)]
               (spyx (.-keyCode e))
-              (cond is-enter (spyx "enter")
-                    is-c (clear-board!)
-                    is-s (request-solution (board->flags-to-be-solved @board))
-                    is-up (spyx "up")
-                    is-down (spyx "down")
-                    is-left (spyx "left")
-                    is-right (spyx "right"))))]
+              (cond is-c (clear-board!)
+                    (or is-enter is-s) (request-solution (board->flags-to-be-solved @board))
+                    is-up (when (> height 3) (reset-board! (util/board->remove-row @board)))
+                    is-down (when (< height 14) (reset-board! (util/board->add-row @board)))
+                    is-left (when (> width 3) (reset-board! (util/board->remove-column @board)))
+                    is-right (when (< width 14) (reset-board! (util/board->add-column @board))))))]
     (create-class
      {:component-did-mount (fn [] (.addEventListener js/document "keydown" keyboard-listeners))
       :reagent-render
