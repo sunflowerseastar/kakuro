@@ -5,7 +5,14 @@
    [tupelo.core :refer [spyx]]
    [reagent.core :as reagent :refer [atom create-class]]))
 
-(defn generate-board []
+(defn generate-board
+  "Rows of squares. A square has :type, :x, :y, and a set of 1 or 2 :flags.
+  The types are:
+  - :black
+  - :entry
+  - :flag
+  Each flag is {:direction :down|:right :sum int :distance int}"
+  []
   [[{:type :black :x 0 :y 0}
     {:type :flag :x 1 :y 0 :flags #{{:direction :down :sum 4 :distance 2}}}
     {:type :flag :x 2 :y 0 :flags #{{:direction :down :sum 6 :distance 2}}}]
@@ -58,14 +65,32 @@
          (= type :entry)
          [:span.piece-container (:value square)])])
 
-(defn on-click-solve [req]
+(defn on-click-solve [flags-to-be-solved]
   (POST "http://localhost:3001/solve"
         {:headers {"content-type" "application/edn"}
-         ;; TODO convert existing board to flags
-         :body "{:flags [[:d 1 0 4 2] [:d 2 0 6 2] [:r 0 1 3 2] [:r 0 2 7 2]]}"
+         :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
          ;; TODO receive solver solution, update board with it
          :handler #(.log js/console (str "response: " %))
          :error-handler #(.error js/console (str "error: " %))}))
+
+(defn rows->flag-squares
+  "Takes a row of squares, returns {:type :flag} ones."
+  [xs]
+  (filter #(= (:type %) :flag) xs))
+
+(defn flag-square->flags-to-be-solved
+  "ex. {:type :flag, :x 1, :y 0, :flags #{{:direction :down, :sum 4, :distance 2}}} -> ([:d 1 0 4 2])"
+  [{:keys [x y flags]}]
+  (->> flags
+       (mapcat (fn [{:keys [direction sum distance]}]
+                 [(if (= direction :down) :d :r) x y sum distance]))
+       vec))
+
+(defn board->flags-to-be-solved
+  [board]
+  (->> board
+       (mapcat rows->flag-squares)
+       (mapv flag-square->flags-to-be-solved)))
 
 (defn main []
   (create-class
@@ -83,7 +108,8 @@
              row))
           @board)]]
        [:div.button-container
-        [:button {:on-click #(on-click-solve [1 2 3])} "solve"]]])}))
+        [:button {:on-click #(on-click-solve (board->flags-to-be-solved @board))}
+         "solve"]]])}))
 
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]
