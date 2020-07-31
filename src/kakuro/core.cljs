@@ -60,11 +60,11 @@
 
 ;; TODO send something like f1: '([:d 1 0 4 2] [:d 2 0 6 2] [:r 0 1 3 2] [:r 0 2 7 2])
 (defn send-m [req]
-  (spyx "send-m" req)
   (POST "http://localhost:3001/json"
-        {:format :json
-         :headers {"Accept" "application/transit+json"}
-         :params x
+        {:headers {"content-type" "application/edn"
+                   "accept" "application/transit+json"}
+         ;; TODO send flags how server solver wants them
+         :body "{:message 1 :user 3}"
          ;; TODO receive solver solution, update board with it
          :handler #(.log js/console (str "response: " %))
          :error-handler #(.error js/console (str "error: " %))}))
