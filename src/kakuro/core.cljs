@@ -65,17 +65,26 @@
          (= type :entry)
          [:span.piece-container (:value square)])])
 
+(defn board-solution->board-with-solutions [board solution]
+  (let [x-shape (count (first board))
+        board-flattened (flatten board)]
+    (->> (loop [squares board-flattened acc [] n 0]
+           (if (or (= n (count solution)) (empty? squares)) acc
+               (let [b (first squares)]
+                 (if (= (:type b) :entry)
+                   (recur (rest squares) (conj acc (assoc b :value (nth solution n))) (inc n))
+                   (recur (rest squares) (conj acc b) n)))))
+         (partition x-shape))))
+
 (defn update-board! [solution]
-  (spyx solution (:solution solution))
-  )
+  (let [board-with-solutions (board-solution->board-with-solutions @board solution)]
+    (reset! board board-with-solutions)))
 
 (defn on-click-solve [flags-to-be-solved]
   (POST "http://localhost:3001/solve"
         {:headers {"content-type" "application/edn"}
          :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
-         ;; TODO receive solver solution, update board with it
-         :handler #(update-board! %)
-         ;; :handler (.log js/console (str "response: " %))
+         :handler #(update-board! (:solution %))
          :error-handler #(.error js/console (str "error: " %))}))
 
 (defn filter-by-type
@@ -96,6 +105,10 @@
   (->> board
        (mapcat (partial filter-by-type :flag))
        (mapv flag-square->flags-to-be-solved)))
+
+(defn board->entries
+  [board]
+  (->> board (mapcat (partial filter-by-type :entry))))
 
 (defn main []
   (create-class
