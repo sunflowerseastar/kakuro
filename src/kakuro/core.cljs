@@ -55,29 +55,6 @@
          :handler #(reset-board! (util/board-solution->board-with-solutions @board (:solution %)))
          :error-handler #(.error js/console (str "error: " %))}))
 
-(defn filter-by-type
-  "Takes a row of squares, returns {:type :flag} ones."
-  [type xs]
-  (filter #(= (:type %) type) xs))
-
-(defn flag-square->flags-to-be-solved
-  "ex. {:type :flag, :x 1, :y 0, :flags #{{:direction :down, :sum 4, :distance 2}}} -> ([:d 1 0 4 2])"
-  [{:keys [x y flags]}]
-  (->> flags
-       (mapcat (fn [{:keys [direction sum distance]}]
-                 [(if (= direction :down) :d :r) x y sum distance]))
-       vec))
-
-(defn board->flags-to-be-solved
-  [board]
-  (->> board
-       (mapcat (partial filter-by-type :flag))
-       (mapv flag-square->flags-to-be-solved)))
-
-(defn board->entries
-  [board]
-  (->> board (mapcat (partial filter-by-type :entry))))
-
 (defn change-square! [x y new-type]
   (swap! board assoc-in [y x] {:type new-type :value nil}))
 
@@ -100,7 +77,7 @@
                   height (count @board)
                   width (-> @board first count)]
               (cond is-c (clear-board!)
-                    (or is-enter is-s) (request-solution (board->flags-to-be-solved @board))
+                    (or is-enter is-s) (request-solution (util/board->flags-to-be-solved @board))
                     is-up (when (> height 3) (reset-board! (util/decrease-board-size @board)))
                     is-down (when (< height 14) (reset-board! (util/increase-board-size @board)))
                     is-left (when (> width 3) (reset-board! (util/decrease-board-size @board)))
@@ -121,7 +98,7 @@
                row))
             @board)]]
          [:div.button-container
-          [:button {:on-click #(request-solution (board->flags-to-be-solved @board))}
+          [:button {:on-click #(request-solution (util/board->flags-to-be-solved @board))}
            "solve"]]])})))
 
 (defn mount-app-element []

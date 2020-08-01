@@ -59,3 +59,26 @@
 
 (defn increase-board-size [board]
   (->> board board->add-row board->add-column vec))
+
+(defn filter-by-type
+  "Takes a row of squares, returns {:type :flag} ones."
+  [type xs]
+  (filter #(= (:type %) type) xs))
+
+(defn flag-square->flags-to-be-solved
+  "ex. {:type :flag, :x 1, :y 0, :flags #{{:direction :down, :sum 4, :distance 2}}} -> ([:d 1 0 4 2])"
+  [{:keys [x y flags]}]
+  (->> flags
+       (mapcat (fn [{:keys [direction sum distance]}]
+                 [(if (= direction :down) :d :r) x y sum distance]))
+       vec))
+
+(defn board->flags-to-be-solved
+  [board]
+  (->> board
+       (mapcat (partial filter-by-type :flag))
+       (mapv flag-square->flags-to-be-solved)))
+
+(defn board->entries
+  [board]
+  (->> board (mapcat (partial filter-by-type :entry))))
