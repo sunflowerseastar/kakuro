@@ -31,12 +31,13 @@
   (let [x-shape (count (first board))
         board-flattened (flatten board)]
     (->> (loop [squares board-flattened acc [] n 0]
-           (if (or (= n (count solution)) (empty? squares)) acc
+           (if (empty? squares) acc
                (let [b (first squares)]
                  (if (= (:type b) :entry)
                    (recur (rest squares) (conj acc (assoc b :value (nth solution n))) (inc n))
                    (recur (rest squares) (conj acc b) n)))))
-         (partition x-shape))))
+         (partition x-shape)
+         vec)))
 
 (defn board->remove-column [board]
   (mapv (comp vec butlast) board))
