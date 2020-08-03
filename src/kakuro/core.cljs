@@ -74,14 +74,20 @@
                   is-down (= (.-keyCode e) 40)
                   is-left (= (.-keyCode e) 37)
                   is-right (= (.-keyCode e) 39)
+                  is-plus (= (.-keyCode e) 187)
+                  is-minus (= (.-keyCode e) 189)
+                  is-comma (= (.-keyCode e) 188)
+                  is-period (= (.-keyCode e) 190)
                   height (count @board)
                   width (-> @board first count)]
               (cond is-c (clear-board!)
                     (or is-enter is-s) (request-solution (util/board->flags-to-be-solved @board))
-                    is-up (when (> height 3) (reset-board! (util/decrease-board-size @board)))
-                    is-down (when (< height 14) (reset-board! (util/increase-board-size @board)))
-                    is-left (when (> width 3) (reset-board! (util/decrease-board-size @board)))
-                    is-right (when (< width 14) (reset-board! (util/increase-board-size @board))))))]
+                    ;; is-up (when (> height 3) (reset-board! (util/decrease-board-size @board)))
+                    ;; is-down (when (< height 14) (reset-board! (util/increase-board-size @board)))
+                    ;; is-left (when (> width 3) (reset-board! (util/decrease-board-size @board)))
+                    ;; is-right (when (< width 14) (reset-board! (util/increase-board-size @board)))
+                    (or is-minus is-comma) (when (and (> width 3) (> height 3)) (reset-board! (util/decrease-board-size @board)))
+                    (or is-plus is-period) (when (and (< width 14) (< height 14)) (reset-board! (util/increase-board-size @board))))))]
     (create-class
      {:component-did-mount (fn [] (.addEventListener js/document "keydown" keyboard-listeners))
       :reagent-render
