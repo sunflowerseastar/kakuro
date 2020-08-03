@@ -30,8 +30,10 @@
   (reset! board new-board))
 
 (defn clear-board! []
-  (let [clear-values (fn [squares] (->> squares (map #(assoc % :value nil))))]
-    (reset-board! (->> @board (map clear-values)))))
+  (let [clear-values (fn [squares] (->> squares (mapv #(assoc % :value nil))))]
+    (reset-board! (->> @board
+                       (map clear-values)
+                       vec))))
 
 (defn square-c [x y {:keys [flags type] :as square} click-fn dbl-click-fn update-sum-fn]
   [:div.square
@@ -53,7 +55,7 @@
          [:span.piece-container (:value square)])])
 
 (defn post-request-solution [flags-to-be-solved]
-  ;; (spyx "post-request-solution" flags-to-be-solved)
+  (spyx "post-request-solution" flags-to-be-solved)
   (POST "http://localhost:3001/solve"
         {:headers {"content-type" "application/edn"}
          :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
@@ -109,11 +111,8 @@
           (keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
                   is-c (= (.-keyCode e) 67)
+                  is-f (= (.-keyCode e) 70)
                   is-s (= (.-keyCode e) 83)
-                  is-up (= (.-keyCode e) 38)
-                  is-down (= (.-keyCode e) 40)
-                  is-left (= (.-keyCode e) 37)
-                  is-right (= (.-keyCode e) 39)
                   is-plus (= (.-keyCode e) 187)
                   is-minus (= (.-keyCode e) 189)
                   is-comma (= (.-keyCode e) 188)
@@ -121,14 +120,10 @@
                   height (count @board)
                   width (-> @board first count)]
               (cond is-c (clear-board!)
+                    is-f (fix-board! @board)
                     (or is-enter is-s) (request-solution)
-                    ;; is-up (when (> height 3) (reset-board! (util/decrease-board-size @board)))
-                    ;; is-down (when (< height 14) (reset-board! (util/increase-board-size @board)))
-                    ;; is-left (when (> width 3) (reset-board! (util/decrease-board-size @board)))
-                    ;; is-right (when (< width 14) (reset-board! (util/increase-board-size @board)))
                     (or is-minus is-comma) (when (and (> width 2) (> height 2)) (reset-board! (util/decrease-board-size @board)))
-                    (or is-plus is-period) (when (and (< width 14) (< height 14)) (reset-board! (util/increase-board-size @board))))))
-          ]
+                    (or is-plus is-period) (when (and (< width 14) (< height 14)) (reset-board! (util/increase-board-size @board))))))]
     (create-class
      {:component-did-mount (fn [] (.addEventListener js/document "keydown" keyboard-listeners))
       :reagent-render

@@ -49,6 +49,7 @@
                    (recur (rest squares) (conj acc (assoc square :value (nth solution n))) (inc n))
                    (recur (rest squares) (conj acc square) n)))))
          (partition x-shape)
+         (map #(into [] %))
          vec)))
 
 (defn board->remove-column [board]
