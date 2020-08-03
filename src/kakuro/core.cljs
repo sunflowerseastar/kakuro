@@ -15,12 +15,12 @@
   Each flag is {:direction :down|:right :sum int :distance int}"
   []
   [[{:type :black :x 0 :y 0}
-    {:type :flag :x 1 :y 0 :flags #{{:direction :down :sum 4 :distance 2}}}
-    {:type :flag :x 2 :y 0 :flags #{{:direction :down :sum 6 :distance 2}}}]
-   [{:type :flag :x 0 :y 1 :flags #{{:direction :right :sum 3 :distance 2}}}
+    {:type :flag :x 1 :y 0 :f2 {:down {:sum 4 :distance 2}} :flags #{{:direction :down :sum 4 :distance 2}}}
+    {:type :flag :x 2 :y 0 :f2 {:down {:sum 6 :distance 2}} :flags #{{:direction :down :sum 6 :distance 2}}}]
+   [{:type :flag :x 0 :y 1 :f2 {:right {:sum 3 :distance 2}} :flags #{{:direction :right :sum 3 :distance 2}}}
     {:type :entry :x 1 :y 1}
     {:type :entry :x 2 :y 1}]
-   [{:type :flag :x 0 :y 2 :flags #{{:direction :right :sum 7 :distance 2}}}
+   [{:type :flag :x 0 :y 2 :f2 {:right {:sum 7 :distance 2}} :flags #{{:direction :right :sum 7 :distance 2}}}
     {:type :entry :x 1 :y 2}
     {:type :entry :x 2 :y 2}]])
 
@@ -33,18 +33,23 @@
   (let [clear-values (fn [squares] (->> squares (map #(assoc % :value nil))))]
     (reset-board! (->> @board (map clear-values)))))
 
-(defn square-c [x y {:keys [flags type] :as square} click-fn]
+(defn square-c [x y {:keys [f2 flags type] :as square} click-fn dbl-click-fn update-sum-fn]
   [:div.square
    {:class type
     :on-click #(click-fn x y square)
+    :on-double-click #(dbl-click-fn x y square)
     :style {:grid-column (+ x 1) :grid-row (+ y 1)}}
    (cond (= type :flag)
-         (->> flags
-              (map (fn [{:keys [direction sum] :as flag}]
-                     [:span.sum
-                      {:key (str x y)
-                       :class (name direction)}
-                      sum])))
+         (->> f2
+              (map (fn [[direction {:keys [sum distance]}]]
+                     (let []
+                       ^{:key (str x y)}
+                       [:input.sum
+                        {:class (name direction)
+                         :data-direction direction
+                         :default-value sum
+                         :on-change #(update-sum-fn x y %)
+                         }]))))
          (= type :entry)
          [:span.piece-container (:value square)])])
 
@@ -64,6 +69,17 @@
         (change-square! x y :black)
         (= type :black)
         (change-square! x y :entry)))
+
+(defn on-double-click-square [x y {:keys [type]}]
+  (spyx x y type)
+  (if (= type :flag)
+    (change-square! x y :entry)
+    (change-square! x y :flag)))
+
+(defn update-sum-fn [x y e]
+  (let [new-sum (-> e .-target .-value js/parseInt)
+        direction (.getAttribute (-> e .-target) "data-direction")]
+    (swap! board assoc-in [y x :f2 (keyword direction) :sum] new-sum)))
 
 (defn main []
   (letfn [(keyboard-listeners [e]
@@ -100,11 +116,14 @@
               (map-indexed
                (fn [x square]
                  ^{:key (str x y)}
-                 [square-c x y square on-click-square])
+                 [square-c x y square on-click-square on-double-click-square update-sum-fn])
                row))
             @board)]]
          [:div.button-container
-          [:button {:on-click #(request-solution (util/board->flags-to-be-solved @board))}
+          [:button {:on-click #(do
+                                 ;; (spyx (util/board->flags-to-be-solved @board))
+                                 ;; (spyx (util/board->f2-to-be-solved @board))
+                                 (request-solution (util/board->f2-to-be-solved @board)))}
            "solve"]]])})))
 
 (defn mount-app-element []

@@ -74,6 +74,22 @@
                  [(if (= direction :down) :d :r) x y sum distance]))
        vec))
 
+(defn flag-square->f2-to-be-solved
+  "ex. {:type :flag, :x 1, :y 0, :f2 {:down {:sum 4 :distance 2}}} -> ([:d 1 0 4 2])"
+  [{:keys [x y f2]}]
+  (->> f2
+       (mapcat (fn [[direction {:keys [sum distance]}]]
+                 [(if (= direction :down) :d :r) x y sum distance]))
+       vec))
+
+(defn board->f2-to-be-solved
+  [board]
+  (->> board
+       (mapcat (partial filter-by-type :flag))
+       ;; (mapv flag-square->flags-to-be-solved)
+       (mapv flag-square->f2-to-be-solved)
+       ))
+
 (defn board->flags-to-be-solved
   [board]
   (->> board
