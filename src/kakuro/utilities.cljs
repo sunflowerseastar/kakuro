@@ -105,9 +105,9 @@
   (->> board (mapcat (partial filter-by-type :entry))))
 
 (defn update-square-distances [square num-entries-below num-entries-right]
-  (do
-    (assoc-in square [:flags :down :distance] num-entries-below)
-    (assoc-in square [:flags :right :distance] num-entries-right)))
+  (-> square
+      (assoc-in [:flags :down :distance] num-entries-below)
+      (assoc-in [:flags :right :distance] num-entries-right)))
 
 (defn remove-orphan-flags [board]
   (let [x-shape (count (first board))
