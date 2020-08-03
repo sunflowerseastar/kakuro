@@ -67,9 +67,12 @@
   (filter #(= (:type %) type) xs))
 
 (defn flag-square->flags-to-be-solved
-  "ex. {:type :flag, :x 1, :y 0, :flags {:down {:sum 4 :distance 2}}} -> ([:d 1 0 4 2])"
+  "ex. {:type :flag, :x 1, :y 0, :flags {:down {:sum 4 :distance 2}}} -> ([:d 1 0 4 2])
+  mapcat is receiving ex. [:down {:sum 4 :distance 2}]"
   [{:keys [x y flags]}]
   (->> flags
+       (filter (fn [[direction {:keys [sum distance]}]]
+                 (and sum distance)))
        (mapcat (fn [[direction {:keys [sum distance]}]]
                  [(if (= direction :down) :d :r) x y sum distance]))
        vec))

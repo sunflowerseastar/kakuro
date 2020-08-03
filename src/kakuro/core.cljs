@@ -15,12 +15,12 @@
   Each flag is {:direction :down|:right :sum int :distance int}"
   []
   [[{:type :black :x 0 :y 0}
-    {:type :flag :x 1 :y 0 :flags {:down {:sum 4 :distance 2}}}
-    {:type :flag :x 2 :y 0 :flags {:down {:sum 6 :distance 2}}}]
-   [{:type :flag :x 0 :y 1 :flags {:right {:sum 3 :distance 2}}}
+    {:type :flag :x 1 :y 0 :flags {:down {:sum 4 :distance 2} :right {:sum 0 :distance nil}}}
+    {:type :flag :x 2 :y 0 :flags {:down {:sum 6 :distance 2} :right {:sum 0 :distance nil}}}]
+   [{:type :flag :x 0 :y 1 :flags {:down {:sum 0 :distance nil} :right {:sum 3 :distance 2}}}
     {:type :entry :x 1 :y 1}
     {:type :entry :x 2 :y 1}]
-   [{:type :flag :x 0 :y 2 :flags {:right {:sum 7 :distance 2}}}
+   [{:type :flag :x 0 :y 2 :flags {:down {:sum 0 :distance nil} :right {:sum 7 :distance 2}}}
     {:type :entry :x 1 :y 2}
     {:type :entry :x 2 :y 2}]])
 
@@ -43,7 +43,7 @@
          (->> flags
               (map (fn [[direction {:keys [sum distance]}]]
                      (let []
-                       ^{:key (str x y)}
+                       ^{:key (str direction x y)}
                        [:input.sum
                         {:class (name direction)
                          :data-direction direction
