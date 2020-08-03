@@ -3,28 +3,17 @@
    [ajax.core :refer [POST]]
    [goog.dom :as gdom]
    [kakuro.utilities :as util]
+   [kakuro.boards :as boards]
    [tupelo.core :refer [spyx]]
    [reagent.core :as reagent :refer [atom create-class]]))
 
-(defn generate-board
-  "Rows of squares. A square has :type, :x, :y, and a set of 1 or 2 :flags.
-  The types are:
-  - :black
-  - :entry
-  - :flag
-  Each flag is {:direction :down|:right :sum int :distance int}"
-  []
-  [[{:type :black :x 0 :y 0}
-    {:type :flag :x 1 :y 0 :flags {:down {:sum 4 :distance 2} :right {:sum 0 :distance nil}}}
-    {:type :flag :x 2 :y 0 :flags {:down {:sum 6 :distance 2} :right {:sum 0 :distance nil}}}]
-   [{:type :flag :x 0 :y 1 :flags {:down {:sum 0 :distance nil} :right {:sum 3 :distance 2}}}
-    {:type :entry :x 1 :y 1}
-    {:type :entry :x 2 :y 1}]
-   [{:type :flag :x 0 :y 2 :flags {:down {:sum 0 :distance nil} :right {:sum 7 :distance 2}}}
-    {:type :entry :x 1 :y 2}
-    {:type :entry :x 2 :y 2}]])
-
-(def board (atom (generate-board)))
+;; "A board contains rows of squares. A square has :type, :x, :y, and a set of 1 or 2 :flags.
+;;   The types are:
+;;   - :black
+;;   - :entry
+;;   - :flag
+;;   Each flag is {:direction :down|:right :sum int :distance int}"
+(def board (atom boards/b2))
 
 (defn reset-board! [new-board]
   (reset! board new-board))
