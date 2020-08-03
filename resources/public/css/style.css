@@ -97,11 +97,11 @@ input.sum {
   width: 20px;
   font-size: 14px;
   z-index: 1;
-  background: #222;
+  background: transparent;
   color: white;
   border: 0;
   border-radius: 0;
-  padding: 4px;
+  /* padding: 4px; */
   text-align: center;
 }
 @media (min-width: 768px) {
@@ -115,17 +115,18 @@ input.sum {
   }
 }
 .sum.right {
-  right: 3px;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 0;
+  top: 10%;
+  transform: translateY(-10%);
+  text-align: right;
 }
 .sum.right.exclude-right {
   display: none;
 }
 .sum.down {
-  bottom: 1px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0;
+  left: 10%;
+  transform: translateX(-10%);
 }
 .sum.down.exclude-down {
   display: none;
