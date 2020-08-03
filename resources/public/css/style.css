@@ -119,10 +119,16 @@ input.sum {
   top: 50%;
   transform: translateY(-50%);
 }
+.sum.right.exclude-right {
+  display: none;
+}
 .sum.down {
   bottom: 1px;
   left: 50%;
   transform: translateX(-50%);
+}
+.sum.down.exclude-down {
+  display: none;
 }
 @media (min-width: 1200px) {
   .sum.right {

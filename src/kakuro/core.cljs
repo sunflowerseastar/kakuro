@@ -35,7 +35,7 @@
                        (map clear-values)
                        vec))))
 
-(defn square-c [x y {:keys [flags type] :as square} click-fn dbl-click-fn update-sum-fn]
+(defn square-c [x y {:keys [flags type] :as square} click-fn dbl-click-fn update-sum-fn x-shape y-shape]
   [:div.square
    {:class type
     :on-click #(click-fn x y square)
@@ -47,7 +47,7 @@
                      (let []
                        ^{:key (str direction x y)}
                        [:input.sum
-                        {:class (name direction)
+                        {:class [(name direction) (when (or (= 0 y) (= (dec x-shape) x)) "exclude-right") (when (or (= 0 x) (= (dec y-shape) y)) "exclude-down")]
                          :data-direction direction
                          :default-value sum
                          :on-change #(update-sum-fn x y %)}]))))
@@ -134,9 +134,11 @@
            (map-indexed
             (fn [y row]
               (map-indexed
-               (fn [x square]
-                 ^{:key (str x y)}
-                 [square-c x y square on-click-square on-double-click-square update-sum-fn])
+               (let [x-shape (count (first @board))
+                     y-shape (count @board)]
+                 (fn [x square]
+                   ^{:key (str x y)}
+                   [square-c x y square on-click-square on-double-click-square update-sum-fn x-shape y-shape]))
                row))
             @board)]]
          [:div.button-container
