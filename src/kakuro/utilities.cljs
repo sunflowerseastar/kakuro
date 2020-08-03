@@ -1,5 +1,5 @@
 (ns kakuro.utilities
-  (:require [tupelo.core :refer [append]]))
+  (:require [tupelo.core :refer [append spyx]]))
 
 (defn get-square [b x y] (get (get b y) x))
 
@@ -14,6 +14,18 @@
     (let [sq (get-square b x (dec y))]
       (if (= (:type sq) :flag) sq
           (recur x (dec y))))))
+
+(defn get-num-entries-below [b x y]
+  (loop [x x y y n 0]
+    (let [sq (get-in b [(inc y) x])]
+      (if (not= (:type sq) :entry) n
+          (recur x (inc y) (inc n))))))
+
+(defn get-num-entries-right [b x y]
+  (loop [x x y y n 0]
+    (let [sq (get-in b [y (inc x)])]
+      (if (not= (:type sq) :entry) n
+          (recur (inc x) y (inc n))))))
 
 (defn x-distance-from-summand [b x y]
   (loop [x x y y n 0]
@@ -32,10 +44,10 @@
         board-flattened (flatten board)]
     (->> (loop [squares board-flattened acc [] n 0]
            (if (empty? squares) acc
-               (let [b (first squares)]
-                 (if (= (:type b) :entry)
-                   (recur (rest squares) (conj acc (assoc b :value (nth solution n))) (inc n))
-                   (recur (rest squares) (conj acc b) n)))))
+               (let [square (first squares)]
+                 (if (= (:type square) :entry)
+                   (recur (rest squares) (conj acc (assoc square :value (nth solution n))) (inc n))
+                   (recur (rest squares) (conj acc square) n)))))
          (partition x-shape)
          vec)))
 
@@ -66,13 +78,16 @@
   [type xs]
   (filter #(= (:type %) type) xs))
 
+(defn possible-sum? [n]
+  (< 0 n (reduce + (range 1 10))))
+
 (defn flag-square->flags-to-be-solved
   "ex. {:type :flag, :x 1, :y 0, :flags {:down {:sum 4 :distance 2}}} -> ([:d 1 0 4 2])
   mapcat is receiving ex. [:down {:sum 4 :distance 2}]"
   [{:keys [x y flags]}]
   (->> flags
        (filter (fn [[direction {:keys [sum distance]}]]
-                 (and sum distance)))
+                 (and (possible-sum? sum) (< 0 distance 9))))
        (mapcat (fn [[direction {:keys [sum distance]}]]
                  [(if (= direction :down) :d :r) x y sum distance]))
        vec))
@@ -81,8 +96,37 @@
   [board]
   (->> board
        (mapcat (partial filter-by-type :flag))
-       (mapv flag-square->flags-to-be-solved)))
+       (mapv flag-square->flags-to-be-solved)
+       (filter (comp not empty?))))
 
 (defn board->entries
   [board]
   (->> board (mapcat (partial filter-by-type :entry))))
+
+(defn update-square-distances [square num-entries-below num-entries-right]
+  (do
+    (assoc-in square [:flags :down :distance] num-entries-below)
+    (assoc-in square [:flags :right :distance] num-entries-right)))
+
+(defn remove-orphan-flags [board]
+  (let [x-shape (count (first board))
+        board-flattened (flatten board)]
+    (->> (loop [squares board-flattened acc [] n 0]
+           (if (empty? squares) acc
+               (let [{:keys [type x y flags] :as square} (first squares)]
+                 (if (= type :flag)
+                   ;; if flag doesn't have entries, change it to sum 0 distance nil
+                   (let [down-flag (:down flags)
+                         num-entries-below (get-num-entries-below board x y)
+                         is-down-unused (zero? num-entries-below)
+                         right-flag (:right flags)
+                         num-entries-right (get-num-entries-right board x y)
+                         is-right-unused (zero? num-entries-right)
+                         new-square (update-square-distances square num-entries-below num-entries-right)]
+                     (if (and is-down-unused is-right-unused)
+                       (recur (rest squares) (conj acc {:type :black :x x :y y}) n)
+                       (recur (rest squares) (conj acc new-square) n)))
+                   (recur (rest squares) (conj acc square) n)))))
+         (partition x-shape)
+         (map #(into [] %))
+         vec)))

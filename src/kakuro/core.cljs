@@ -53,15 +53,26 @@
          [:span.piece-container (:value square)])])
 
 (defn post-request-solution [flags-to-be-solved]
-  (spyx "post-request-solution" flags-to-be-solved)
-  #_(POST "http://localhost:3001/solve"
-          {:headers {"content-type" "application/edn"}
-           :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
-           :handler #(reset-board! (util/board-solution->board-with-solutions @board (:solution %)))
-           :error-handler #(.error js/console (str "error: " %))}))
+  ;; (spyx "post-request-solution" flags-to-be-solved)
+  (POST "http://localhost:3001/solve"
+        {:headers {"content-type" "application/edn"}
+         :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
+         :handler #(reset-board! (util/board-solution->board-with-solutions @board (:solution %)))
+         :error-handler #(.error js/console (str "error: " %))}))
 
 (defn change-square-type! [x y new-type]
-  (swap! board assoc-in [y x] {:type new-type :value nil}))
+  (swap! board assoc-in [y x] {:type new-type :x x :y y :value nil}))
+
+(defn new-flag [direction]
+  {direction {:sum 0 :distance nil}})
+
+(defn change-square-to-flag! [x y]
+  (swap! board assoc-in [y x]
+         {:type :flag :x x :y y
+          :flags {:down {:sum 0 :distance nil}
+                  :right {:sum 0 :distance nil}}}
+         ;; {:type :flag :x x :y y :flags {(new-flag :down) (new-flag :right)}}
+         ))
 
 (defn on-click-square [x y {:keys [type]}]
   (spyx x y type)
@@ -74,17 +85,27 @@
   (spyx x y type)
   (if (= type :flag)
     (change-square-type! x y :entry)
-    (change-square-type! x y :flag)))
+    (change-square-to-flag! x y)))
 
 (defn update-sum-fn [x y e]
   (let [new-sum (-> e .-target .-value js/parseInt)
         direction (.getAttribute (-> e .-target) "data-direction")]
     (swap! board assoc-in [y x :flags (keyword direction) :sum] new-sum)))
 
+(defn fix-board! [b]
+  (let [new-board (-> b
+                      util/remove-orphan-flags
+                      ;; util/update-distances
+                      ;; util/remove-entry-orphans
+                      )]
+    ;; (spyx board new-board)
+    (reset! board new-board)))
+
 (defn main []
   (letfn [(request-solution []
-            (spyx "request-solution")
-            (post-request-solution (util/board->flags-to-be-solved @board)))
+            (doall
+             (fix-board! @board)
+             (post-request-solution (util/board->flags-to-be-solved @board))))
           (keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
                   is-c (= (.-keyCode e) 67)
@@ -105,7 +126,7 @@
                     ;; is-down (when (< height 14) (reset-board! (util/increase-board-size @board)))
                     ;; is-left (when (> width 3) (reset-board! (util/decrease-board-size @board)))
                     ;; is-right (when (< width 14) (reset-board! (util/increase-board-size @board)))
-                    (or is-minus is-comma) (when (and (> width 3) (> height 3)) (reset-board! (util/decrease-board-size @board)))
+                    (or is-minus is-comma) (when (and (> width 2) (> height 2)) (reset-board! (util/decrease-board-size @board)))
                     (or is-plus is-period) (when (and (< width 14) (< height 14)) (reset-board! (util/increase-board-size @board))))))
           ]
     (create-class
