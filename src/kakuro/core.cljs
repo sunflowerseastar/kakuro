@@ -60,21 +60,21 @@
            :handler #(reset-board! (util/board-solution->board-with-solutions @board (:solution %)))
            :error-handler #(.error js/console (str "error: " %))}))
 
-(defn change-square! [x y new-type]
+(defn change-square-type! [x y new-type]
   (swap! board assoc-in [y x] {:type new-type :value nil}))
 
 (defn on-click-square [x y {:keys [type]}]
   (spyx x y type)
   (cond (= type :entry)
-        (change-square! x y :black)
+        (change-square-type! x y :black)
         (= type :black)
-        (change-square! x y :entry)))
+        (change-square-type! x y :entry)))
 
 (defn on-double-click-square [x y {:keys [type]}]
   (spyx x y type)
   (if (= type :flag)
-    (change-square! x y :entry)
-    (change-square! x y :flag)))
+    (change-square-type! x y :entry)
+    (change-square-type! x y :flag)))
 
 (defn update-sum-fn [x y e]
   (let [new-sum (-> e .-target .-value js/parseInt)
