@@ -52,12 +52,13 @@
          (= type :entry)
          [:span.piece-container (:value square)])])
 
-(defn request-solution [flags-to-be-solved]
-  (POST "http://localhost:3001/solve"
-        {:headers {"content-type" "application/edn"}
-         :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
-         :handler #(reset-board! (util/board-solution->board-with-solutions @board (:solution %)))
-         :error-handler #(.error js/console (str "error: " %))}))
+(defn post-request-solution [flags-to-be-solved]
+  (spyx "post-request-solution" flags-to-be-solved)
+  #_(POST "http://localhost:3001/solve"
+          {:headers {"content-type" "application/edn"}
+           :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
+           :handler #(reset-board! (util/board-solution->board-with-solutions @board (:solution %)))
+           :error-handler #(.error js/console (str "error: " %))}))
 
 (defn change-square! [x y new-type]
   (swap! board assoc-in [y x] {:type new-type :value nil}))
@@ -81,7 +82,10 @@
     (swap! board assoc-in [y x :flags (keyword direction) :sum] new-sum)))
 
 (defn main []
-  (letfn [(keyboard-listeners [e]
+  (letfn [(request-solution []
+            (spyx "request-solution")
+            (post-request-solution (util/board->flags-to-be-solved @board)))
+          (keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
                   is-c (= (.-keyCode e) 67)
                   is-s (= (.-keyCode e) 83)
@@ -96,13 +100,14 @@
                   height (count @board)
                   width (-> @board first count)]
               (cond is-c (clear-board!)
-                    (or is-enter is-s) (request-solution (util/board->flags-to-be-solved @board))
+                    (or is-enter is-s) (request-solution)
                     ;; is-up (when (> height 3) (reset-board! (util/decrease-board-size @board)))
                     ;; is-down (when (< height 14) (reset-board! (util/increase-board-size @board)))
                     ;; is-left (when (> width 3) (reset-board! (util/decrease-board-size @board)))
                     ;; is-right (when (< width 14) (reset-board! (util/increase-board-size @board)))
                     (or is-minus is-comma) (when (and (> width 3) (> height 3)) (reset-board! (util/decrease-board-size @board)))
-                    (or is-plus is-period) (when (and (< width 14) (< height 14)) (reset-board! (util/increase-board-size @board))))))]
+                    (or is-plus is-period) (when (and (< width 14) (< height 14)) (reset-board! (util/increase-board-size @board))))))
+          ]
     (create-class
      {:component-did-mount (fn [] (.addEventListener js/document "keydown" keyboard-listeners))
       :reagent-render
@@ -119,7 +124,7 @@
                row))
             @board)]]
          [:div.button-container
-          [:button {:on-click #(request-solution (util/board->flags-to-be-solved @board))}
+          [:button {:on-click #(request-solution)}
            "solve"]]])})))
 
 (defn mount-app-element []
