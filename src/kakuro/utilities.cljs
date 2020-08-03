@@ -89,15 +89,14 @@
   (->> flags
        (filter (fn [[direction {:keys [sum distance]}]]
                  (and (possible-sum? sum) (< 0 distance 9))))
-       (mapcat (fn [[direction {:keys [sum distance]}]]
-                 [(if (= direction :down) :d :r) x y sum distance]))
-       vec))
+       (map (fn [[direction {:keys [sum distance]}]]
+              [(if (= direction :down) :d :r) x y sum distance]))))
 
 (defn board->flags-to-be-solved
   [board]
   (->> board
        (mapcat (partial filter-by-type :flag))
-       (mapv flag-square->flags-to-be-solved)
+       (mapcat flag-square->flags-to-be-solved)
        (filter (comp not empty?))))
 
 (defn board->entries
