@@ -48,8 +48,7 @@
                         {:class (name direction)
                          :data-direction direction
                          :default-value sum
-                         :on-change #(update-sum-fn x y %)
-                         }]))))
+                         :on-change #(update-sum-fn x y %)}]))))
          (= type :entry)
          [:span.piece-container (:value square)])])
 

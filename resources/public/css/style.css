@@ -94,8 +94,15 @@ body {
 }
 .sum {
   position: absolute;
+  width: 16px;
   font-size: 14px;
   z-index: 1;
+  background: #222;
+  color: white;
+  border: 0;
+  border-radius: 0;
+  padding: 5px;
+  text-align: center;
 }
 @media (min-width: 768px) {
   .sum {
@@ -114,10 +121,8 @@ body {
 }
 .sum.down {
   bottom: 1px;
-  width: 100%;
-  left: 0;
-  margin: 0 auto;
-  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
 }
 @media (min-width: 1200px) {
   .sum.right {
