@@ -13,7 +13,7 @@
 ;;   - :entry
 ;;   - :flag
 ;;   Each flag is {:direction :down|:right :sum int :distance int}"
-(def board (atom boards/b2))
+(def board (atom boards/b1))
 
 (defn reset-board! [new-board]
   (reset! board new-board))
