@@ -1,5 +1,9 @@
 * kakuro
 
+#+begin_src sh
+lein fig:min
+#+end_src
+
 |      | :d 4 | :d 6 |
 | :r 3 |      |      |
 | :r 7 |      |      |
