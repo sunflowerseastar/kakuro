@@ -15,6 +15,10 @@
 ;;   Each flag is {:direction :down|:right :sum int :distance int}"
 (def board (atom boards/b1))
 
+(def is-requesting (atom false))
+(def is-timeout (atom false))
+(def is-success (atom false))
+
 (defn reset-board! [new-board]
   (reset! board new-board))
 
@@ -45,11 +49,19 @@
 
 (defn post-request-solution [flags-to-be-solved]
   (spyx "post-request-solution" flags-to-be-solved)
-  (POST "http://localhost:3001/solve"
-        {:headers {"content-type" "application/edn"}
-         :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
-         :handler #(reset-board! (util/board-solution->board-with-solutions @board (:solution %)))
-         :error-handler #(.error js/console (str "error: " %))}))
+  (do
+    (reset! is-requesting true)
+    (POST "http://localhost:3001/solve"
+          {:headers {"content-type" "application/edn"}
+           :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
+           :handler #(do
+                       (reset! is-requesting false)
+                       (reset! is-success true)
+                       (reset-board! (util/board-solution->board-with-solutions @board (:solution %))))
+           :error-handler #(do
+                             (reset! is-requesting false)
+                             (reset! is-timeout true)
+                             (.error js/console (str "error: " %)))})))
 
 (defn change-square-type! [x y new-type]
   (swap! board assoc-in [y x] {:type new-type :x x :y y :value nil}))
@@ -131,8 +143,11 @@
                row))
             @board)]]
          [:div.button-container
-          [:button {:on-click #(request-solution)}
-           "solve"]]])})))
+          [:div.button-indicator
+           {:class [(when @is-success "is-success") (when @is-timeout "is-timeout") (when @is-requesting "is-requesting")]}
+           [:button {:on-click #(when (and (false? @is-success) (false? @is-timeout) (false? @is-requesting))
+                                   (request-solution))}
+            "solve"]]]])})))
 
 (defn mount-app-element []
   (when-let [el (gdom/getElement "app")]

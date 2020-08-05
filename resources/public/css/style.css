@@ -162,6 +162,26 @@ input.sum {
     padding: 2vh 0 8vh;
   }
 }
+.button-indicator {
+  position: relative;
+  display: inline-block;
+}
+.button-indicator:before {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  height: 10px;
+  width: 100%;
+}
+.button-indicator.is-requesting:before {
+  background: #eee;
+}
+.button-indicator.is-timeout:before {
+  background: #ff8c94;
+}
+.button-indicator.is-success:before {
+  background: #b1e597;
+}
 button {
   position: relative;
   padding: 1.4em 4.6em;
