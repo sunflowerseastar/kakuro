@@ -20,7 +20,10 @@
 (def is-success (atom false))
 
 (defn reset-board! [new-board]
-  (reset! board new-board))
+  (do (reset! is-requesting false)
+      (reset! is-timeout false)
+      (reset! is-success false)
+      (reset! board new-board)))
 
 (defn clear-board! []
   (let [clear-values (fn [squares] (->> squares (mapv #(assoc % :value nil))))]
@@ -99,7 +102,7 @@
                       ;; util/remove-entry-orphans
                       )]
     ;; (spyx board new-board)
-    (reset! board new-board)))
+    (reset-board! new-board)))
 
 (defn main []
   (letfn [(request-solution []
