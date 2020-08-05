@@ -167,20 +167,37 @@ input.sum {
   display: inline-block;
 }
 .button-indicator:before {
-  content: "";
+  content: '';
   position: absolute;
   bottom: -5px;
   height: 10px;
   width: 100%;
 }
 .button-indicator.is-requesting:before {
-  background: #eee;
+  background: #ccc;
 }
 .button-indicator.is-timeout:before {
   background: #ff8c94;
 }
 .button-indicator.is-success:before {
   background: #b1e597;
+}
+.button-indicator.is-requesting button,
+.button-indicator.is-timeout button,
+.button-indicator.is-success button {
+  top: 0px !important;
+}
+.button-indicator.is-requesting button {
+  background: #333;
+  cursor: progress;
+}
+.button-indicator.is-timeout button {
+  background: #555;
+  cursor: not-allowed;
+}
+.button-indicator.is-success button {
+  background: #555;
+  cursor: default;
 }
 button {
   position: relative;
@@ -192,6 +209,7 @@ button {
   box-shadow: 0;
   border: 2px solid transparent;
   outline: none;
+  cursor: pointer;
 }
 button:hover {
   top: -1px;
