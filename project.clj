@@ -9,7 +9,6 @@
   :dependencies [[cljs-ajax "0.8.0"]
                  [org.clojure/clojure "1.10.0"]
                  [org.clojure/clojurescript "1.10.764"]
-                 [org.clojure/core.logic "1.0.0"]
                  [tupelo "0.9.201"]
                  [reagent "0.8.1"]]
 
