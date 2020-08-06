@@ -108,8 +108,7 @@
 
 (defn fix-board! [b]
   (let [new-board (-> b
-                      util/remove-orphan-flags
-                      ;; util/update-distances
+                      util/fix-flags
                       ;; util/remove-entry-orphans
                       )]
     ;; (spyx board new-board)

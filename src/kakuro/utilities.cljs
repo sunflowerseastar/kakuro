@@ -108,7 +108,11 @@
       (assoc-in [:flags :down :distance] num-entries-below)
       (assoc-in [:flags :right :distance] num-entries-right)))
 
-(defn remove-orphan-flags [board]
+(defn fix-flags
+  "This function takes a board and returns a board with two modifications:
+  - if a flag square is 'unused', then change it to a black
+  - if a flag is used, then update/correct its distances"
+  [board]
   (let [x-shape (count (first board))
         board-flattened (flatten board)]
     (->> (loop [squares board-flattened acc [] n 0]
@@ -124,7 +128,9 @@
                          is-right-unused (zero? num-entries-right)
                          new-square (update-square-distances square num-entries-below num-entries-right)]
                      (if (and is-down-unused is-right-unused)
+                       ;; change [unused] flag square to black
                        (recur (rest squares) (conj acc {:type :black :x x :y y}) n)
+                       ;; update flag square with correct distances
                        (recur (rest squares) (conj acc new-square) n)))
                    (recur (rest squares) (conj acc square) n)))))
          (partition x-shape)
