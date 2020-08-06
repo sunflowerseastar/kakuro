@@ -51,8 +51,12 @@
               (map (fn [[direction {:keys [sum distance]}]]
                      (let []
                        ^{:key (str direction x y)}
-                       [:input.sum
-                        {:class [(name direction) (when (or (= 0 y) (= (dec x-shape) x)) "exclude-right") (when (or (= 0 x) (= (dec y-shape) y)) "exclude-down")]
+                       [:input.flag
+                        {:class [(name direction)
+                                 (when (and (= direction :down) (zero? sum)) "hide-down")
+                                 (when (and (= direction :right) (zero? sum)) "hide-right")
+                                 (when (or (zero? x) (= (dec y-shape) y)) "exclude-down")
+                                 (when (or (zero? y) (= (dec x-shape) x)) "exclude-right")]
                          :data-direction direction
                          :default-value sum
                          :on-change #(update-sum-fn x y %)}]))))

@@ -92,7 +92,7 @@ body {
   background: #222;
   color: white;
 }
-input.sum {
+input.flag {
   position: absolute;
   width: 20px;
   font-size: 14px;
@@ -105,41 +105,44 @@ input.sum {
   text-align: center;
 }
 @media (min-width: 768px) {
-  .sum {
+  .flag {
     font-size: 16px;
   }
 }
 @media (min-width: 1200px) {
-  .sum {
+  .flag {
     font-size: 18px;
   }
 }
-.sum.right {
+.flag.down {
+  bottom: 0;
+  left: 10%;
+  transform: translateX(-10%);
+}
+.flag.right {
   right: 0;
   top: 10%;
   transform: translateY(-10%);
   text-align: right;
 }
-.sum.right.exclude-right {
-  display: none;
-}
-.sum.down {
-  bottom: 0;
-  left: 10%;
-  transform: translateX(-10%);
-}
-.sum.down.exclude-down {
-  display: none;
-}
 @media (min-width: 1200px) {
-  .sum.right {
-    right: 10px;
-  }
-  .sum.down {
+  .flag.down {
     bottom: 6px;
   }
+  .flag.right {
+    right: 10px;
+  }
 }
-.entry {
+.flag.right.hide-down,
+.flag.right.hide-right {
+  opacity: 0;
+}
+.flag.right.hide-down:focus .flag.right.hide-right:focus {
+  opacity: 1;
+}
+.flag.right.exclude-down,
+.flag.right.exclude-right {
+  display: none;
 }
 .piece-container {
   position: absolute;
