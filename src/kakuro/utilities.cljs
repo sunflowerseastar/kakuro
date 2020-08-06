@@ -136,3 +136,23 @@
          (partition x-shape)
          (map #(into [] %))
          vec)))
+
+(defn fix-entries
+  "This function takes a board and returns a board without orphaned entries."
+  [board]
+  (let [x-shape (count (first board))
+        board-flattened (flatten board)]
+    (->> (loop [squares board-flattened acc [] n 0]
+           (if (empty? squares) acc
+               (let [{:keys [type x y] :as square} (first squares)]
+                 (if (= type :entry)
+                   (let [square-above (get-in board [(dec y) x])
+                         square-left (get-in board [y (dec x)])]
+                     (if (or (= (:type square-above) :black) (= (:type square-left) :black))
+                       ;; replace orphaned entry with black
+                       (recur (rest squares) (conj acc {:type :black :x x :y y}) n)
+                       (recur (rest squares) (conj acc square) n)))
+                   (recur (rest squares) (conj acc square) n)))))
+         (partition x-shape)
+         (map #(into [] %))
+         vec)))

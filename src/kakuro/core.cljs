@@ -108,15 +108,13 @@
 
 (defn fix-board! [b]
   (let [new-board (-> b
-                      util/fix-flags
-                      ;; util/remove-entry-orphans
-                      )]
-    ;; (spyx board new-board)
+                      util/fix-entries
+                      util/fix-flags)]
     (reset-board! new-board)))
 
 (defn main []
   (letfn [(request-solution []
-            (doall
+            (do
              (fix-board! @board)
              (post-request-solution (util/board->flags-to-be-solved @board))))
           (keyboard-listeners [e]
