@@ -73,9 +73,7 @@
   (swap! board assoc-in [y x]
          {:type :flag :x x :y y
           :flags {:down {:sum 0 :distance nil}
-                  :right {:sum 0 :distance nil}}}
-         ;; {:type :flag :x x :y y :flags {(new-flag :down) (new-flag :right)}}
-         ))
+                  :right {:sum 0 :distance nil}}}))
 
 (defn on-click-square [x y {:keys [type]}]
   (spyx x y type)
