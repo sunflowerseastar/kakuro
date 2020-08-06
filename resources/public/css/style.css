@@ -133,14 +133,15 @@ input.flag {
     right: 10px;
   }
 }
-.flag.right.hide-down,
+.flag.down.hide-down,
 .flag.right.hide-right {
   opacity: 0;
 }
-.flag.right.hide-down:focus .flag.right.hide-right:focus {
+.flag.down.hide-down:focus,
+.flag.right.hide-right:focus {
   opacity: 1;
 }
-.flag.right.exclude-down,
+.flag.down.exclude-down,
 .flag.right.exclude-right {
   display: none;
 }

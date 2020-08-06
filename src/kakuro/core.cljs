@@ -13,7 +13,7 @@
 ;;   - :entry
 ;;   - :flag
 ;;   Each flag is {:direction :down|:right :sum int :distance int}"
-(def board (atom boards/b1))
+(def board (atom (util/fix-board boards/b1)))
 
 ;; "ui"
 (def is-requesting (atom false))
@@ -49,14 +49,15 @@
    (cond (= type :flag)
          (->> flags
               (map (fn [[direction {:keys [sum distance]}]]
-                     (let []
+                     (let [down? (= direction :down)
+                           right? (= direction :right)]
                        ^{:key (str direction x y)}
                        [:input.flag
                         {:class [(name direction)
-                                 (when (and (= direction :down) (zero? sum)) "hide-down")
-                                 (when (and (= direction :right) (zero? sum)) "hide-right")
-                                 (when (or (zero? x) (= (dec y-shape) y)) "exclude-down")
-                                 (when (or (zero? y) (= (dec x-shape) x)) "exclude-right")]
+                                 (when (and down? (or (zero? distance) (zero? sum))) "hide-down")
+                                 (when (and down? (or (zero? x) (= (dec y-shape) y))) "exclude-down")
+                                 (when (and right? (or (zero? distance) (zero? sum))) "hide-right")
+                                 (when (and right? (or (zero? y) (= (dec x-shape) x))) "exclude-right")]
                          :data-direction direction
                          :default-value sum
                          :on-change #(update-sum-fn x y %)}]))))
@@ -91,10 +92,10 @@
         distance-down (util/get-num-entries-below b x y)
         distance-right (util/get-num-entries-right b x y)]
     (do (clear!)
-       (swap! board assoc-in [y x]
-              {:type :flag :x x :y y
-               :flags {:down {:sum 1 :distance distance-down}
-                       :right {:sum 1 :distance distance-right}}}))))
+        (swap! board assoc-in [y x]
+               {:type :flag :x x :y y
+                :flags {:down {:sum 1 :distance distance-down}
+                        :right {:sum 1 :distance distance-right}}}))))
 
 (defn on-click-square [x y {:keys [type]}]
   (cond (= type :entry)
@@ -114,7 +115,7 @@
         (swap! board assoc-in [y x :flags (keyword direction) :sum] new-sum))))
 
 (defn fix-board! [b]
-  (let [new-board (-> b util/fix-entries util/fix-flags)]
+  (let [new-board (util/fix-board b)]
     (reset-board! new-board)))
 
 (defn main []

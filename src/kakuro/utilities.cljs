@@ -155,3 +155,8 @@
          (partition x-shape)
          (map #(into [] %))
          vec)))
+
+(defn fix-board [board]
+  (-> board
+      fix-entries
+      fix-flags))
