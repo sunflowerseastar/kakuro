@@ -119,7 +119,6 @@
            (if (empty? squares) acc
                (let [{:keys [type x y flags] :as square} (first squares)]
                  (if (= type :flag)
-                   ;; if flag doesn't have entries, change it to sum 0 distance nil
                    (let [down-flag (:down flags)
                          num-entries-below (get-num-entries-below board x y)
                          is-down-unused (zero? num-entries-below)

@@ -84,14 +84,14 @@
       (swap! board assoc-in [y x] {:type new-type :x x :y y :value nil})))
 
 (defn new-flag [direction]
-  {direction {:sum 0 :distance nil}})
+  {direction {:sum 0 :distance 0}})
 
 (defn change-square-to-flag! [x y]
   (do (clear!)
       (swap! board assoc-in [y x]
              {:type :flag :x x :y y
-              :flags {:down {:sum 0 :distance nil}
-                      :right {:sum 0 :distance nil}}})))
+              :flags {:down {:sum 0 :distance 0}
+                      :right {:sum 0 :distance 0}}})))
 
 (defn on-click-square [x y {:keys [type]}]
   (cond (= type :entry)
