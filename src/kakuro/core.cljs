@@ -100,12 +100,12 @@
 (defn on-click-square [x y {:keys [type]}]
   (cond (= type :entry)
         (change-square-type! x y :black)
-        (= type :black)
+        (and (= type :black) (not= 0 x) (not= 0 y))
         (change-square-type! x y :entry)))
 
 (defn on-dbl-click-square [x y {:keys [type]}]
   (if (= type :flag)
-    (change-square-type! x y :entry)
+    (change-square-type! x y :black)
     (change-square-to-flag! x y)))
 
 (defn update-sum-fn [x y e]
