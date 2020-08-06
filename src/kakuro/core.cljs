@@ -120,8 +120,8 @@
 
 (defn main []
   (letfn [(request-solution []
-            (do (fix-board! @board)
-                (post-request-solution (util/board->flags-to-be-solved @board))))
+            (doall (fix-board! @board)
+                   (post-request-solution (util/board->flags-to-be-solved @board))))
           (keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
                   is-c (= (.-keyCode e) 67)
