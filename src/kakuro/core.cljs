@@ -87,11 +87,14 @@
   {direction {:sum 0 :distance 0}})
 
 (defn change-square-to-flag! [x y]
-  (do (clear!)
-      (swap! board assoc-in [y x]
-             {:type :flag :x x :y y
-              :flags {:down {:sum 0 :distance 0}
-                      :right {:sum 0 :distance 0}}})))
+  (let [b @board
+        distance-down (util/get-num-entries-below b x y)
+        distance-right (util/get-num-entries-right b x y)]
+    (do (clear!)
+       (swap! board assoc-in [y x]
+              {:type :flag :x x :y y
+               :flags {:down {:sum 1 :distance distance-down}
+                       :right {:sum 1 :distance distance-right}}}))))
 
 (defn on-click-square [x y {:keys [type]}]
   (cond (= type :entry)
@@ -99,7 +102,7 @@
         (= type :black)
         (change-square-type! x y :entry)))
 
-(defn on-double-click-square [x y {:keys [type]}]
+(defn on-dbl-click-square [x y {:keys [type]}]
   (if (= type :flag)
     (change-square-type! x y :entry)
     (change-square-to-flag! x y)))
@@ -150,7 +153,7 @@
                      y-shape (count @board)]
                  (fn [x square]
                    ^{:key (str x y)}
-                   [square-c x y square on-click-square on-double-click-square update-sum-fn x-shape y-shape]))
+                   [square-c x y square on-click-square on-dbl-click-square update-sum-fn x-shape y-shape]))
                row))
             @board)]]
          [:div.button-container
