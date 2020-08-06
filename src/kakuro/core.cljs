@@ -107,16 +107,13 @@
         (swap! board assoc-in [y x :flags (keyword direction) :sum] new-sum))))
 
 (defn fix-board! [b]
-  (let [new-board (-> b
-                      util/fix-entries
-                      util/fix-flags)]
+  (let [new-board (-> b util/fix-entries util/fix-flags)]
     (reset-board! new-board)))
 
 (defn main []
   (letfn [(request-solution []
-            (do
-             (fix-board! @board)
-             (post-request-solution (util/board->flags-to-be-solved @board))))
+            (do (fix-board! @board)
+                (post-request-solution (util/board->flags-to-be-solved @board))))
           (keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
                   is-c (= (.-keyCode e) 67)
