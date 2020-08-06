@@ -177,6 +177,9 @@ input.sum {
   background: #ccc;
 }
 .button-indicator.is-timeout:before {
+  background: #ffbad1;
+}
+.button-indicator.is-no-solution:before {
   background: #ff8c94;
 }
 .button-indicator.is-success:before {
@@ -184,6 +187,7 @@ input.sum {
 }
 .button-indicator.is-requesting button,
 .button-indicator.is-timeout button,
+.button-indicator.is-no-solution button,
 .button-indicator.is-success button {
   top: 0px !important;
 }
@@ -191,7 +195,8 @@ input.sum {
   background: #333;
   cursor: progress;
 }
-.button-indicator.is-timeout button {
+.button-indicator.is-timeout button,
+.button-indicator.is-no-solution button {
   background: #555;
   cursor: not-allowed;
 }
