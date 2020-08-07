@@ -51,7 +51,8 @@
 
 (defn square-c [x y {:keys [flags type] :as square} click-fn dbl-click-fn update-sum-fn x-shape y-shape]
   [:div.square
-   {:class [type (when (= (dec y-shape) y) "no-bottom-border")]
+   {:class [type (when (= (dec y-shape) y) "board-edge-bottom")
+            (when (= (dec x-shape) x) "board-edge-right")]
     :on-click #(click-fn x y square)
     :on-double-click #(dbl-click-fn x y square)
     :style {:grid-column (+ x 1) :grid-row (+ y 1)
@@ -63,10 +64,7 @@
                            right? (= direction :right)]
                        ^{:key (str direction x y)}
                        [:input.flag-input
-                        {:style {
-                                 ;; :font-size (str (grid-to-font-size (count @board)) "px")
-                                 }
-                         :class [(name direction)
+                        {:class [(name direction)
                                  (when (and down? (or (zero? distance) (zero? sum))) "hide-down")
                                  (when (and down? (or (zero? x) (= (dec y-shape) y))) "exclude-down")
                                  (when (and right? (or (zero? distance) (zero? sum))) "hide-right")
@@ -75,7 +73,7 @@
                          :default-value sum
                          :on-change #(update-sum-fn x y %)}]))))
          (= type :entry)
-         [:span.piece-container (:value square)])])
+         [:span.entry-inner (:value square)])])
 
 (defn post-request-solution [flags-to-be-solved]
   ;; (spyx "post-request-solution" flags-to-be-solved)

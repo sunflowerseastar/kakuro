@@ -34,7 +34,6 @@ body {
   height: 90vw;
   margin: 0 auto;
   text-align: center;
-  border: 1px solid #222;
 }
 @media (min-width: 480px) {
   .board {
@@ -57,13 +56,54 @@ body {
   position: relative;
   height: 0;
   padding-bottom: 100%;
+  border-right: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+.square.board-edge-bottom {
+  border-bottom: 1px solid #222 !important;
+}
+.square.board-edge-right {
+  border-right: 1px solid #222 !important;
 }
 .square.black {
-  border: 1px solid transparent;
+  background: #222;
+}
+.square.entry {
+  background: white;
+  border-bottom: 0;
+  border-right: 1px solid #ddd;
+}
+@media (min-width: 400px) {
+  .square.entry {
+    border-bottom: 1px solid #ddd;
+  }
+}
+.entry-inner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+.board-edge-bottom .entry-inner {
+  border-bottom: 0;
+}
+@media (min-width: 400px) {
+  .entry-inner {
+    border-bottom: 0;
+  }
 }
 .square.flag {
   position: relative;
-  border: 1px solid #3b3b3b;
+  background: #222;
+  color: white;
+  border-right: 1px solid #3b3b3b;
+  border-bottom: 1px solid #3b3b3b;
   overflow: hidden;
 }
 .square.flag:before,
@@ -85,23 +125,9 @@ body {
   left: 1px;
   border-top: 100vh solid #222;
 }
-.square.entry {
-  background: white;
-  border: 1px solid #ddd;
-}
-.square.no-bottom-border {
-  border-bottom: 0 !important;
-}
-.black {
-  background: #222;
-}
-.flag {
-  background: #222;
-  color: white;
-}
 .flag-input {
   position: absolute;
-  width: 20px;
+  width: 50%;
   /* "base" font-size is in div.square's markup */
   font-size: 1em;
   z-index: 1;
@@ -109,8 +135,14 @@ body {
   color: white;
   border: 0;
   border-radius: 0;
-  /* padding: 4px; */
+  padding: 1px 2px;
   text-align: center;
+}
+@media (min-width: 400px) {
+  .flag-input {
+    font-size: 1.1em;
+    padding: 2px;
+  }
 }
 @media (min-width: 768px) {
   .flag-input {
@@ -125,11 +157,13 @@ body {
 @media (min-width: 1400px) {
   .flag-input {
     font-size: 1.22em;
+    padding: 2px 3px;
   }
 }
 @media (min-width: 1800px) {
   .flag-input {
     font-size: 1.26em;
+    padding: 3px;
   }
 }
 .flag-input.down {
@@ -163,21 +197,10 @@ body {
 .flag-input.right.exclude-right {
   display: none;
 }
-.piece-container {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
 
 .button-container {
   text-align: center;
-  padding: 2 0 14vh;
+  padding: 2vh 0 14vh;
 }
 @media (min-width: 400px) {
   .button-container {
