@@ -147,6 +147,7 @@
         [:div.main
          [:div.board-container
           [:div.board
+           {:style {:grid-template-rows (str "repeat(14, " (/ 100 (count @board)) "%)")}}
            (map-indexed
             (fn [y row]
               (map-indexed
