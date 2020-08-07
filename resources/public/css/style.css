@@ -89,6 +89,9 @@ body {
   background: white;
   border: 1px solid #ddd;
 }
+.square.no-bottom-border {
+  border-bottom: 0 !important;
+}
 .black {
   background: #222;
 }
@@ -96,10 +99,11 @@ body {
   background: #222;
   color: white;
 }
-input.flag {
+.flag-input {
   position: absolute;
   width: 20px;
-  /* font-size: 14px; */
+  /* "base" font-size is in div.square's markup */
+  font-size: 1em;
   z-index: 1;
   background: transparent;
   color: white;
@@ -109,49 +113,54 @@ input.flag {
   text-align: center;
 }
 @media (min-width: 768px) {
-  .flag {
-    /* font-size: 16px; */
+  .flag-input {
+    font-size: 1.1em;
   }
 }
 @media (min-width: 1200px) {
-  .flag {
-    /* font-size: 18px; */
+  .flag-input {
+    font-size: 1.18em;
   }
 }
-.flag.down {
+@media (min-width: 1400px) {
+  .flag-input {
+    font-size: 1.22em;
+  }
+}
+@media (min-width: 1800px) {
+  .flag-input {
+    font-size: 1.26em;
+  }
+}
+.flag-input.down {
   bottom: -1px;
-  left: 10%;
-  transform: translateX(-10%);
+  left: 0;
   text-align: left;
 }
-.flag.right {
+.flag-input.right {
   right: -1px;
-  top: 10%;
-  transform: translateY(-10%);
+  top: 0;
   text-align: right;
 }
 @media (min-width: 1200px) {
-  .flag.down {
+  .flag-input.down {
+    left: 3px;
     bottom: 0;
-    left: 0;
-    transform: translateX(0);
   }
-  .flag.right {
+  .flag-input.right {
     right: 0;
-    top: 0;
-    transform: translateY(0);
   }
 }
-.flag.down.hide-down,
-.flag.right.hide-right {
+.flag-input.down.hide-down,
+.flag-input.right.hide-right {
   opacity: 0;
 }
-.flag.down.hide-down:focus,
-.flag.right.hide-right:focus {
+.flag-input.down.hide-down:focus,
+.flag-input.right.hide-right:focus {
   opacity: 1;
 }
-.flag.down.exclude-down,
-.flag.right.exclude-right {
+.flag-input.down.exclude-down,
+.flag-input.right.exclude-right {
   display: none;
 }
 .piece-container {
@@ -168,7 +177,12 @@ input.flag {
 
 .button-container {
   text-align: center;
-  padding: 4vh 0 10vh;
+  padding: 2 0 14vh;
+}
+@media (min-width: 400px) {
+  .button-container {
+    padding: 2vh 0 12vh;
+  }
 }
 @media (min-width: 768px) {
   .button-container {
