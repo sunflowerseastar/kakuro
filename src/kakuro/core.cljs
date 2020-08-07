@@ -77,7 +77,7 @@
 (defn post-request-solution [flags-to-be-solved]
   ;; (spyx "post-request-solution" flags-to-be-solved)
   (do (reset! is-requesting true)
-      (POST "http://localhost:3001/solve"
+      (POST "/api/solve"
             {:headers {"content-type" "application/edn"}
              :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
              :handler #(let [solution (:solution %)]
