@@ -168,7 +168,7 @@ body {
 @media (min-width: 768px) {
   .flag-input {
     font-size: 1.1em;
-    padding: 1px 3px 2px;
+    padding: 2px 3px;
   }
 }
 @media (min-width: 1200px) {
