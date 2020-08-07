@@ -87,6 +87,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  font-size: 1.1em;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
@@ -95,7 +96,28 @@ body {
 }
 @media (min-width: 400px) {
   .entry-inner {
+    font-size: 1.25em;
     border-bottom: 0;
+  }
+}
+@media (min-width: 768px) {
+  .entry-inner {
+    font-size: 1.5em;
+  }
+}
+@media (min-width: 1200px) {
+  .entry-inner {
+    /* font-size: 1.6em; */
+  }
+}
+@media (min-width: 1400px) {
+  .entry-inner {
+    font-size: 1.6em;
+  }
+}
+@media (min-width: 1800px) {
+  .entry-inner {
+    font-size: 1.8em;
   }
 }
 .square.flag {
@@ -129,41 +151,40 @@ body {
   position: absolute;
   width: 50%;
   /* "base" font-size is in div.square's markup */
-  font-size: 1em;
+  font-size: 0.9em;
   z-index: 1;
   background: transparent;
   color: white;
   border: 0;
   border-radius: 0;
-  padding: 1px 2px;
+  padding: 0 2px 1px;
   text-align: center;
 }
 @media (min-width: 400px) {
   .flag-input {
-    font-size: 1.1em;
-    padding: 2px;
+    font-size: 1em;
   }
 }
 @media (min-width: 768px) {
   .flag-input {
     font-size: 1.1em;
+    padding: 1px 3px 2px;
   }
 }
 @media (min-width: 1200px) {
   .flag-input {
     font-size: 1.18em;
+    padding: 2px 4px;
   }
 }
 @media (min-width: 1400px) {
   .flag-input {
-    font-size: 1.22em;
-    padding: 2px 3px;
+    font-size: 1.24em;
   }
 }
 @media (min-width: 1800px) {
   .flag-input {
-    font-size: 1.26em;
-    padding: 3px;
+    font-size: 1.4em;
   }
 }
 .flag-input.down {
@@ -219,8 +240,8 @@ body {
 .button-indicator:before {
   content: '';
   position: absolute;
-  bottom: -5px;
-  height: 10px;
+  bottom: 0;
+  height: 5px;
   width: 100%;
 }
 .button-indicator.is-requesting:before {
@@ -256,15 +277,27 @@ body {
 }
 button {
   position: relative;
+  margin-bottom: 5px;
   padding: 1.4em 4.6em;
   font-family: monospace;
   font-weight: bold;
   color: white;
   background: #222;
-  box-shadow: 0;
+  box-shadow: none;
   border: 2px solid transparent;
   outline: none;
   cursor: pointer;
+  overflow: hidden;
+}
+@media (min-width: 1600px) {
+  button {
+    font-size: 1.05em;
+  }
+}
+@media (min-width: 1800px) {
+  button {
+    font-size: 1.1em;
+  }
 }
 button:hover {
   top: -1px;

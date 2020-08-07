@@ -43,9 +43,12 @@
 (defn grid-to-font-size [grid]
   (cond
     (> grid 13) 9
-    (> grid 11) 12
-    (> grid 9) 13
-    (> grid 7) 15
+    (> grid 11) 10
+    (> grid 10) 11
+    (> grid 9) 12
+    (> grid 8) 13
+    (> grid 7) 14
+    (> grid 6) 15
     (> grid 5) 16
     :else 20))
 
