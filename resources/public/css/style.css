@@ -99,7 +99,7 @@ body {
 input.flag {
   position: absolute;
   width: 20px;
-  font-size: 14px;
+  /* font-size: 14px; */
   z-index: 1;
   background: transparent;
   color: white;
@@ -110,31 +110,36 @@ input.flag {
 }
 @media (min-width: 768px) {
   .flag {
-    font-size: 16px;
+    /* font-size: 16px; */
   }
 }
 @media (min-width: 1200px) {
   .flag {
-    font-size: 18px;
+    /* font-size: 18px; */
   }
 }
 .flag.down {
-  bottom: 0;
+  bottom: -1px;
   left: 10%;
   transform: translateX(-10%);
+  text-align: left;
 }
 .flag.right {
-  right: 0;
+  right: -1px;
   top: 10%;
   transform: translateY(-10%);
   text-align: right;
 }
 @media (min-width: 1200px) {
   .flag.down {
-    bottom: 6px;
+    bottom: 0;
+    left: 0;
+    transform: translateX(0);
   }
   .flag.right {
-    right: 10px;
+    right: 0;
+    top: 0;
+    transform: translateY(0);
   }
 }
 .flag.down.hide-down,

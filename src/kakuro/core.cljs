@@ -40,6 +40,15 @@
   (do (clear-ui!)
       (clear-board!)))
 
+(defn grid-to-font-size [grid]
+  (cond
+    (> grid 13) 9
+    (> grid 11) 12
+    (> grid 9) 13
+    (> grid 7) 15
+    (> grid 5) 16
+    :else 20))
+
 (defn square-c [x y {:keys [flags type] :as square} click-fn dbl-click-fn update-sum-fn x-shape y-shape]
   [:div.square
    {:class type
@@ -53,7 +62,8 @@
                            right? (= direction :right)]
                        ^{:key (str direction x y)}
                        [:input.flag
-                        {:class [(name direction)
+                        {:style {:font-size (str (grid-to-font-size (count @board)) "px")}
+                         :class [(name direction)
                                  (when (and down? (or (zero? distance) (zero? sum))) "hide-down")
                                  (when (and down? (or (zero? x) (= (dec y-shape) y))) "exclude-down")
                                  (when (and right? (or (zero? distance) (zero? sum))) "hide-right")
