@@ -59,7 +59,7 @@
     :on-click #(click-fn x y square)
     :on-double-click #(dbl-click-fn x y square)
     :style {:grid-column (+ x 1) :grid-row (+ y 1)
-            :font-size (str (grid-to-font-size (count @board)) "px")}}
+            :font-size (str (grid-to-font-size y-shape) "px")}}
    (cond (= type :flag)
          (->> flags
               (map (fn [[direction {:keys [sum distance]}]]
