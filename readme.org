@@ -66,3 +66,7 @@ Final result:
 |      | :d 4 | :d 6 |
 | :r 3 |    1 |    2 |
 | :r 7 |    3 |    4 |
+
+* reference
+
+- https://puzzleparasite.blogspot.com/2012/09/hungarian-puzzle-championship-kakuro.html
