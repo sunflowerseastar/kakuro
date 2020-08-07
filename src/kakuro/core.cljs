@@ -162,16 +162,16 @@
          [:div.board-container
           [:div.board
            {:style {:grid-template-rows (str "repeat(14, " (/ 100 (count @board)) "%)")}}
-           (map-indexed
-            (fn [y row]
-              (map-indexed
-               (let [x-shape (count (first @board))
-                     y-shape (count @board)]
+           (let [x-shape (count (first @board))
+                 y-shape (count @board)]
+             (map-indexed
+              (fn [y row]
+                (map-indexed
                  (fn [x square]
                    ^{:key (str x y)}
-                   [square-c x y square on-click-square on-dbl-click-square update-sum-fn x-shape y-shape]))
-               row))
-            @board)]]
+                   [square-c x y square on-click-square on-dbl-click-square update-sum-fn x-shape y-shape])
+                 row))
+              @board))]]
          [:div.button-container
           [:div.button-indicator
            {:class [(when @is-success "is-success")
