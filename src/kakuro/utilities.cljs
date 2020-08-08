@@ -1,5 +1,5 @@
 (ns kakuro.utilities
-  (:require [tupelo.core :refer [append spyx]]))
+  (:require [tupelo.core :refer [append spyx it->]]))
 
 (defn get-square [b x y] (get (get b y) x))
 
@@ -160,3 +160,56 @@
   (-> board
       fix-entries
       fix-flags))
+
+(defn gen-board [x-shape y-shape]
+  (->> (repeat x-shape {}) vec (repeat y-shape) vec))
+
+(defn flags-to-be-solved->board
+  "Explode flag shorthand into a board.
+  shorthand ex. '([:d 1 0 4 2] [:d 2 0 6 2] [:r 0 1 3 2] [:r 0 2 7 2])"
+  [ftbs]
+  (let [;; first, create an empty board of the appropriate size
+        downs (filter #(= (first %) :d) ftbs)
+        rights (filter #(= (first %) :r) ftbs)
+        y-shape (->> downs
+                     (map #(+ (nth % 2) (nth % 4)))
+                     (apply max)
+                     inc)
+        x-shape (->> rights
+                     (map #(+ (second %) (nth % 4)))
+                     (apply max)
+                     inc)
+        empty-board (gen-board x-shape y-shape)
+
+        ;; second, get a list of all the entry squares
+        down-entries (->> downs
+                          (mapcat (fn [[_ x y _ distance]]
+                                    (->> (range (inc y) (+ (inc y) distance))
+                                         (map (fn [entry-y] [x entry-y]))))))
+        right-entries (->> rights
+                           (mapcat (fn [[_ x y _ distance]]
+                                     (->> (range (inc x) (+ (inc x) distance))
+                                          (map (fn [entry-x] [entry-x y]))))))
+        new-entries (-> (mapcat vector down-entries right-entries) distinct)
+
+        ;; lastly, create the new board in 3 steps
+        new-board (it-> ftbs
+                        ;; add flags
+                        (reduce (fn [acc [dir x y sum distance]]
+                                  (let [direction (if (= dir :d) :down :right)]
+                                    (-> acc
+                                        (assoc-in [y x :type] :flag)
+                                        (assoc-in [y x :x] x)
+                                        (assoc-in [y x :y] y)
+                                        (assoc-in [y x :flags direction] {:sum sum :distance distance}))))
+                                empty-board it)
+
+                        ;; add entries
+                        (reduce (fn [acc [x y]]
+                                  (-> acc
+                                      (assoc-in [y x] {:type :entry :x x :y y})))
+                                it new-entries)
+
+                        ;; add black
+                        (mapv (fn [row] (->> row (mapv #(if (empty? %) {:type :black} %)))) it))]
+    new-board))
