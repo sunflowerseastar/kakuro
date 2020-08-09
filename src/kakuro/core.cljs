@@ -13,7 +13,7 @@
 ;;   - :entry
 ;;   - :flag
 ;;   Each flag is {:direction :down|:right :sum int :distance int}"
-(def board (atom (util/flags-to-be-solved->board boards/ftbs-b1)))
+(def board (atom (util/flags-to-be-solved->board boards/para-11-1)))
 
 ;; "ui"
 (def is-requesting (atom false))

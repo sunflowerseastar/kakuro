@@ -70,3 +70,4 @@ Final result:
 * reference
 
 - https://puzzleparasite.blogspot.com/2012/09/hungarian-puzzle-championship-kakuro.html
+- https://blogs.sas.com/content/operations/2017/02/24/solving-kakuro-puzzles-with-sasor/
