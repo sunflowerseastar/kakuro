@@ -3,16 +3,16 @@
 
 (defn get-square [b x y] (get (get b y) x))
 
-(defn get-right-flag [b x y]
+(defn get-right-clue [b x y]
   (loop [x x y y]
     (let [sq (get-square b (dec x) y)]
-      (if (= (:type sq) :flag) sq
+      (if (= (:type sq) :clue) sq
           (recur (dec x) y)))))
 
-(defn get-down-flag [b x y]
+(defn get-down-clue [b x y]
   (loop [x x y y]
     (let [sq (get-square b x (dec y))]
-      (if (= (:type sq) :flag) sq
+      (if (= (:type sq) :clue) sq
           (recur x (dec y))))))
 
 (defn get-num-entries-below [b x y]
@@ -30,13 +30,13 @@
 (defn x-distance-from-summand [b x y]
   (loop [x x y y n 0]
     (let [sq (get-square b (dec x) y)]
-      (if (= (:type sq) :flag) n
+      (if (= (:type sq) :clue) n
           (recur (dec x) y (inc n))))))
 
 (defn y-distance-from-summand [b x y]
   (loop [x x y y n 0]
     (let [sq (get-square b x (dec y))]
-      (if (= (:type sq) :flag) n
+      (if (= (:type sq) :clue) n
           (recur x (dec y) (inc n))))))
 
 (defn board-solution->board-with-solutions [board solution]
@@ -75,28 +75,28 @@
   (->> board board->add-row board->add-column vec))
 
 (defn filter-by-type
-  "Takes a row of squares, returns {:type :flag} ones."
+  "Takes a row of squares, returns {:type :clue} ones."
   [type xs]
   (filter #(= (:type %) type) xs))
 
 (defn possible-sum? [n]
   (< 0 n (reduce + (range 1 10))))
 
-(defn flag-square->flags-to-be-solved
-  "ex. {:type :flag, :x 1, :y 0, :flags {:down {:sum 4 :distance 2}}} -> ([:d 1 0 4 2])
+(defn clue-square->clue-notation
+  "ex. {:type :clue, :x 1, :y 0, :clues {:down {:sum 4 :distance 2}}} -> ([:d 1 0 4 2])
   mapcat is receiving ex. [:down {:sum 4 :distance 2}]"
-  [{:keys [x y flags]}]
-  (->> flags
+  [{:keys [x y clues]}]
+  (->> clues
        (filter (fn [[direction {:keys [sum distance]}]]
                  (and (possible-sum? sum) (< 0 distance 9))))
        (map (fn [[direction {:keys [sum distance]}]]
               [(if (= direction :down) :d :r) x y sum distance]))))
 
-(defn board->flags-to-be-solved
+(defn board->clue-notation
   [board]
   (->> board
-       (mapcat (partial filter-by-type :flag))
-       (mapcat flag-square->flags-to-be-solved)
+       (mapcat (partial filter-by-type :clue))
+       (mapcat clue-square->clue-notation)
        (filter (comp not empty?))))
 
 (defn board->entries
@@ -105,31 +105,31 @@
 
 (defn update-square-distances [square num-entries-below num-entries-right]
   (-> square
-      (assoc-in [:flags :down :distance] num-entries-below)
-      (assoc-in [:flags :right :distance] num-entries-right)))
+      (assoc-in [:clues :down :distance] num-entries-below)
+      (assoc-in [:clues :right :distance] num-entries-right)))
 
-(defn fix-flags
+(defn fix-clues
   "This function takes a board and returns a board with two modifications:
-  - if a flag square is 'unused', then change it to a black
-  - if a flag is used, then update/correct its distances"
+  - if a clue square is 'unused', then change it to a black
+  - if a clue is used, then update/correct its distances"
   [board]
   (let [x-shape (count (first board))
         board-flattened (flatten board)]
     (->> (loop [squares board-flattened acc [] n 0]
            (if (empty? squares) acc
-               (let [{:keys [type x y flags] :as square} (first squares)]
-                 (if (= type :flag)
-                   (let [down-flag (:down flags)
+               (let [{:keys [type x y clues] :as square} (first squares)]
+                 (if (= type :clue)
+                   (let [down-clue (:down clues)
                          num-entries-below (get-num-entries-below board x y)
                          is-down-unused (zero? num-entries-below)
-                         right-flag (:right flags)
+                         right-clue (:right clues)
                          num-entries-right (get-num-entries-right board x y)
                          is-right-unused (zero? num-entries-right)
                          new-square (update-square-distances square num-entries-below num-entries-right)]
                      (if (and is-down-unused is-right-unused)
-                       ;; change [unused] flag square to black
+                       ;; change [unused] clue square to black
                        (recur (rest squares) (conj acc {:type :black :x x :y y}) n)
-                       ;; update flag square with correct distances
+                       ;; update clue square with correct distances
                        (recur (rest squares) (conj acc new-square) n)))
                    (recur (rest squares) (conj acc square) n)))))
          (partition x-shape)
@@ -137,7 +137,7 @@
          vec)))
 
 (defn fix-entries
-  "This function takes a board and returns a board without orphaned entries."
+  "This function takes a board and returns a board without clueless entries."
   [board]
   (let [x-shape (count (first board))
         board-flattened (flatten board)]
@@ -148,7 +148,7 @@
                    (let [square-above (get-in board [(dec y) x])
                          square-left (get-in board [y (dec x)])]
                      (if (or (= (:type square-above) :black) (= (:type square-left) :black))
-                       ;; replace orphaned entry with black
+                       ;; replace clueless entry with black
                        (recur (rest squares) (conj acc {:type :black :x x :y y}) n)
                        (recur (rest squares) (conj acc square) n)))
                    (recur (rest squares) (conj acc square) n)))))
@@ -159,18 +159,18 @@
 (defn fix-board [board]
   (-> board
       fix-entries
-      fix-flags))
+      fix-clues))
 
 (defn gen-board [x-shape y-shape]
   (->> (repeat x-shape {}) vec (repeat y-shape) vec))
 
-(defn flags-to-be-solved->board
-  "Explode flag shorthand into a board.
+(defn clue-notation->board
+  "Explode clue shorthand into a board.
   shorthand ex. '([:d 1 0 4 2] [:d 2 0 6 2] [:r 0 1 3 2] [:r 0 2 7 2])"
-  [ftbs]
+  [clue-notation]
   (let [;; first, create an empty board of the appropriate size
-        downs (filter #(= (first %) :d) ftbs)
-        rights (filter #(= (first %) :r) ftbs)
+        downs (filter #(= (first %) :d) clue-notation)
+        rights (filter #(= (first %) :r) clue-notation)
         y-shape (->> downs
                      (map #(+ (nth % 2) (nth % 4)))
                      (apply max)
@@ -193,15 +193,15 @@
         new-entries (-> (mapcat vector down-entries right-entries) distinct)
 
         ;; lastly, create the new board in 3 steps
-        new-board (it-> ftbs
-                        ;; add flags
+        new-board (it-> clue-notation
+                        ;; add clues
                         (reduce (fn [acc [dir x y sum distance]]
                                   (let [direction (if (= dir :d) :down :right)]
                                     (-> acc
-                                        (assoc-in [y x :type] :flag)
+                                        (assoc-in [y x :type] :clue)
                                         (assoc-in [y x :x] x)
                                         (assoc-in [y x :y] y)
-                                        (assoc-in [y x :flags direction] {:sum sum :distance distance}))))
+                                        (assoc-in [y x :clues direction] {:sum sum :distance distance}))))
                                 empty-board it)
 
                         ;; add entries

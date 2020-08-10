@@ -208,7 +208,7 @@ body {
     font-size: 1.8em;
   }
 }
-.square.flag {
+.square.clue {
   position: relative;
   background: #222;
   color: white;
@@ -216,8 +216,8 @@ body {
   border-bottom: 1px solid #3b3b3b;
   overflow: hidden;
 }
-.square.flag:before,
-.square.flag:after {
+.square.clue:before,
+.square.clue:after {
   content: '';
   position: absolute;
   top: 0;
@@ -227,15 +227,15 @@ body {
   border-left: 100vh solid transparent;
   border-right: 100vh solid transparent;
 }
-.square.flag:before {
+.square.clue:before {
   left: 0;
   border-top: 100vh solid #666;
 }
-.square.flag:after {
+.square.clue:after {
   left: 1px;
   border-top: 100vh solid #222;
 }
-.flag-input {
+.clue-input {
   position: absolute;
   width: 50%;
   /* "base" font-size is in div.square's markup */
@@ -251,68 +251,68 @@ body {
   text-align: center;
 }
 @media (min-width: 400px) {
-  .flag-input {
+  .clue-input {
     font-size: 1em;
     padding: 1px 2px;
   }
 }
 @media (min-width: 500px) {
-  .flag-input {
+  .clue-input {
     font-size: 1.06em;
     padding: 2px;
   }
 }
 @media (min-width: 768px) {
-  .flag-input {
+  .clue-input {
     font-size: 1.1em;
     padding: 2px 3px;
   }
 }
 @media (min-width: 1200px) {
-  .flag-input {
+  .clue-input {
     font-size: 1.18em;
     padding: 2px 4px;
   }
 }
 @media (min-width: 1400px) {
-  .flag-input {
+  .clue-input {
     font-size: 1.24em;
   }
 }
 @media (min-width: 1800px) {
-  .flag-input {
+  .clue-input {
     font-size: 1.4em;
   }
 }
-.flag-input.down {
+.clue-input.down {
   bottom: -1px;
   left: 0;
   text-align: left;
 }
-.flag-input.right {
+.clue-input.right {
   right: -1px;
   top: 0;
   text-align: right;
 }
 @media (min-width: 1200px) {
-  .flag-input.down {
+  .clue-input.down {
     left: 3px;
     bottom: 0;
   }
-  .flag-input.right {
+  .clue-input.right {
     right: 0;
   }
 }
-.flag-input.down.hide-down,
-.flag-input.right.hide-right {
+.clue-input.down.hide-down,
+.clue-input.right.hide-right {
   opacity: 0;
 }
-.flag-input.down.hide-down:focus,
-.flag-input.right.hide-right:focus {
+.clue-input.down.hide-down:focus,
+.clue-input.right.hide-right:focus {
   opacity: 1;
 }
-.flag-input.down.exclude-down,
-.flag-input.right.exclude-right {
+.clue-input.down.exclude-down,
+.clue-input.right.exclude-right {
   display: none;
 }
 

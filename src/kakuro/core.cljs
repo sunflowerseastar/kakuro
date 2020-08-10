@@ -7,15 +7,15 @@
    [tupelo.core :refer [spyx]]
    [reagent.core :as reagent :refer [atom create-class]]))
 
-;; "A board contains rows of squares. A square has :type, :x, :y, and a set of 1 or 2 :flags.
+;; "A board contains rows of squares. A square has :type, :x, :y, and a set of 1 or 2 :clues.
 ;;   The types are:
 ;;   - :black
 ;;   - :entry
-;;   - :flag
-;;   Each flag is {:direction :down|:right :sum int :distance int}"
+;;   - :clue
+;;   Each clue is {:direction :down|:right :sum int :distance int}"
 (def current-board-index (atom 0))
 (def is-board-modified (atom false))
-(def board (atom (util/flags-to-be-solved->board (nth boards/boards @current-board-index))))
+(def board (atom (util/clue-notation->board (nth boards/boards @current-board-index))))
 
 ;; "ui"
 (def is-requesting (atom false))
@@ -52,7 +52,7 @@
         (clear-board!)
         (reset! current-board-index new-board-index)
         (reset-board! (-> (nth boards/boards new-board-index)
-                          (util/flags-to-be-solved->board)))
+                          (util/clue-notation->board)))
         (reset! is-board-modified false))))
 
 (defn grid-to-font-size [grid]
@@ -67,7 +67,7 @@
     (> grid 5) 16
     :else 20))
 
-(defn square-c [x y {:keys [flags type] :as square} click-fn click-mode dbl-click-fn update-sum-fn x-shape y-shape]
+(defn square-c [x y {:keys [clues type] :as square} click-fn click-mode dbl-click-fn update-sum-fn x-shape y-shape]
   [:div.square
    {:class [type (when (= (dec y-shape) y) "board-edge-bottom")
             (when (= (dec x-shape) x) "board-edge-right")]
@@ -75,13 +75,13 @@
     :on-double-click #(dbl-click-fn x y square)
     :style {:grid-column (+ x 1) :grid-row (+ y 1)
             :font-size (str (grid-to-font-size y-shape) "px")}}
-   (cond (= type :flag)
-         (->> flags
+   (cond (= type :clue)
+         (->> clues
               (map (fn [[direction {:keys [sum distance]}]]
                      (let [down? (= direction :down)
                            right? (= direction :right)]
                        ^{:key (str direction x y)}
-                       [:input.flag-input
+                       [:input.clue-input
                         {:class [(name direction)
                                  (when (and down? (or (zero? distance) (zero? sum))) "hide-down")
                                  (when (and down? (or (zero? x) (= (dec y-shape) y))) "exclude-down")
@@ -93,12 +93,12 @@
          (= type :entry)
          [:span.entry-inner (:value square)])])
 
-(defn post-request-solution [flags-to-be-solved]
-  ;; (spyx "post-request-solution" flags-to-be-solved)
+(defn post-request-solution [clue-notation]
+  ;; (spyx "post-request-solution" clue-notation)
   (do (reset! is-requesting true)
       (POST "/api/solve"
             {:headers {"content-type" "application/edn"}
-             :body (str "{:flags-to-be-solved " flags-to-be-solved "}")
+             :body (str "{:clue-notation " clue-notation "}")
              :handler #(let [solution (:solution %)]
                          (do (reset! is-requesting false)
                              (if (empty? solution)
@@ -113,39 +113,39 @@
   (do (clear!)
       (swap! board assoc-in [y x] {:type new-type :x x :y y :value nil})))
 
-(defn new-flag [direction]
+(defn new-clue [direction]
   {direction {:sum 0 :distance 0}})
 
-(defn change-square-to-flag! [x y]
+(defn change-square-to-clue! [x y]
   (let [b @board
         distance-down (util/get-num-entries-below b x y)
         distance-right (util/get-num-entries-right b x y)]
     (do (clear!)
         (swap! board assoc-in [y x]
-               {:type :flag :x x :y y
-                :flags {:down {:sum 1 :distance distance-down}
+               {:type :clue :x x :y y
+                :clues {:down {:sum 1 :distance distance-down}
                         :right {:sum 1 :distance distance-right}}}))))
 
 (defn on-click-square! [x y {:keys [type]} click-mode]
   (if (= click-mode :clue)
-    (if (= type :flag)
+    (if (= type :clue)
       (change-square-type! x y :black)
-      (change-square-to-flag! x y))
+      (change-square-to-clue! x y))
     (cond (= type :entry)
           (change-square-type! x y :black)
           (and (= type :black) (not= 0 x) (not= 0 y))
           (change-square-type! x y :entry))))
 
 (defn on-dbl-click-square! [x y {:keys [type]}]
-  (if (= type :flag)
+  (if (= type :clue)
     (change-square-type! x y :black)
-    (change-square-to-flag! x y)))
+    (change-square-to-clue! x y)))
 
 (defn update-sum-fn [x y e]
   (let [new-sum (-> e .-target .-value js/parseInt)
         direction (.getAttribute (-> e .-target) "data-direction")]
     (do (clear!)
-        (swap! board assoc-in [y x :flags (keyword direction) :sum] new-sum))))
+        (swap! board assoc-in [y x :clues (keyword direction) :sum] new-sum))))
 
 (defn fix-board! [b]
   (let [new-board (util/fix-board b)]
@@ -154,7 +154,7 @@
 (defn main []
   (letfn [(request-solution []
             (do (fix-board! @board)
-                (post-request-solution (util/board->flags-to-be-solved @board))))
+                (post-request-solution (util/board->clue-notation @board))))
           (keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
                   is-c (= (.-keyCode e) 67)
