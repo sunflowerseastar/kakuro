@@ -1,51 +1,74 @@
 * kakuro
 
-#+begin_src sh
-lein fig:min
-#+end_src
+Kakuro, a.k.a. cross sums, is a numeric crossword puzzle. Each entry square, the white blank ones, holds a non-negative single digit integer. A "clue" is a sum that its corresponding row or column of contiguous entries evaluates to. For each adjoining row or column of entries, the values must be unique.
+
+This repo is a front-end for the [[https://github.com/sunflowerseastar/kakuro-server][kakuro solver]]. It is a way to visually construct boards and then communicate with the solver via an API.
+
+* Quick Start
+
+~lein fig:min~, navigate to ~localhost:9500~.
+
+* High Level Overview
+
+- interact with the board until it represents what should be solved
+- click the solve button to send the board (as represented by *clue notation*) to the solver
+- receive the solution and update the board with it (or show red for error/timeout)
+
+Here's a minimal example board:
 
 |      | :d 4 | :d 6 |
 | :r 3 |      |      |
 | :r 7 |      |      |
 
-Overall board data structure is a nested array—rows of squares, each of which is type ~:black~, ~:entry~, or ~:flag~:
+This board's "verbose" data structure is a nested vector—rows of squares, each of which is type ~:black~, ~:entry~, or ~:clue~:
 
 #+begin_src clojure
-[[{:type :black :x 0 :y 0}
-    {:type :flag :x 1 :y 0 :flags #{{:direction :down :sum 4 :distance 2}}}
-    {:type :flag :x 2 :y 0 :flags #{{:direction :down :sum 6 :distance 2}}}]
-   [{:type :flag :x 0 :y 1 :flags #{{:direction :right :sum 3 :distance 2}}}
+(def verbose-board-example
+  [[{:type :black :x 0 :y 0}
+    {:type :clue :x 1 :y 0 :clues {:down {:sum 4 :distance 2}}}
+    {:type :clue :x 2 :y 0 :clues {:down {:sum 6 :distance 2}}}]
+   [{:type :clue :x 0 :y 1 :clues {:right {:sum 3 :distance 2}}}
     {:type :entry :x 1 :y 1}
     {:type :entry :x 2 :y 1}]
-   [{:type :flag :x 0 :y 2 :flags #{{:direction :right :sum 7 :distance 2}}}
+   [{:type :clue :x 0 :y 2 :clues {:right {:sum 7 :distance 2}}}
     {:type :entry :x 1 :y 2}
-    {:type :entry :x 2 :y 2}]]
+    {:type :entry :x 2 :y 2}]])
 #+end_src
 
-Aside: the x/y's are redundant, in the sense that they could be calculated as their respective matrix positions. It is maintained because it's useful when elements need to know their x/y values late in a composition chain, and it would require extra effort to either thread the x/y's along with all the functions or manage a lifted state.
+Aside: the x/y's are redundant, in the sense that they could be calculated as their respective matrix positions. However, they are explicitly maintained because it's useful when elements need to know their x/y values late in a computational chain, and it would otherwise require extra effort to thread the x/y's along with all the functions or manage a state.
 
-The solver only needs to know the flags. Note that one square can have two flags, so the number of flag squares and flags is different in some scenarios.
+*Distance* means the number of corresponding entry squares.
 
-There is a compact notation for the solver, ~flags-to-be-solved~:
+Clues are the most important part because a full board can be extrapolated just from them. Our example board can be represented by the following clue notation:
 
 #+begin_src clojure
 ;; [:direction x y sum distance]
 
-(def flags-to-be-solved
+(def clue-notation-example
   [[:d 1 0 4 2]
    [:d 2 0 6 2]
    [:r 0 1 3 2]
    [:r 0 2 7 2]])
 #+end_src
 
-These are passed to the ~solve/~ API call:
+Note that one square can have two clues, so the number of /clue squares/ and /clues/ is different in some scenarios.
+
+Helper functions can transform between the verbose form and the compact, clue notation form:
 
 #+begin_src clojure
-(POST "http://localhost:3001/solve"
-      {:headers {"content-type" "application/edn"}
-       :body "{:flags-to-be-solved flags-to-be-solved}"
-       :handler #(.log js/console (str "response: " %))
-       :error-handler #(.error js/console (str "error: " %))})
+(util/clue-notation->board clue-notation-example)
+
+(util/board->clue-notation verbose-board-example)
+#+end_src
+
+Clue notation is passed over the wire to the solver:
+
+#+begin_src clojure
+(POST "/api/solve"
+      {:headers ...
+       :body "{:clue-notation clue-notation}"
+       :handler ...
+       :error-handler ...})
 #+end_src
 
 ...which returns a solution:
@@ -54,7 +77,7 @@ These are passed to the ~solve/~ API call:
 [1 2 3 4]
 #+end_src
 
-The numbers in the solution correspond to the entry values:
+The numbers in the solution correspond to the values in the entry squares:
 
 #+begin_src
 [[1 2]
@@ -67,7 +90,35 @@ Final result:
 | :r 3 |    1 |    2 |
 | :r 7 |    3 |    4 |
 
-* reference
+* Interaction
+
+Plus/minus buttons increase and decrease the board size. Shrinking clobbers data.
+
+There are two click modes, "normal" and "clue." In *normal mode*, a single click will change a square from black type to entry type, or vice versa. In *clue mode*, clicking will change a square to become a clue type, or to a black type. The interface must be in normal mode in order to adjust the sums (clue values).
+
+On desktop, a user can remain in normal mode and use double clicks to change a square to a flag type or not.
+
+Keyboard shortcuts:
+
+| key      | action             |
+|----------+--------------------|
+| ~-~, ~+~ | shrink, expand     |
+| ~<~, ~>~ | shrink, expand     |
+| ~,~, ~.~ | shrink, expand     |
+| ~s~      | solve              |
+| ~f~      | "fix" board        |
+| ~c~      | clear entry values |
+
+"Fixing" means:
+
+- remove clue squares that don't correspond to any entries
+- hide clues that don't correspond to any entries (this is when the other clue in the square is still valid)
+- update the distance for each clue (as in, the number of corresponding entry squares)
+- remove entry squares that aren't connected to any clues
+
+Boards are auto-fixed prior to being submitted to the solver.
+
+* Reference
 
 - https://puzzleparasite.blogspot.com/2012/09/hungarian-puzzle-championship-kakuro.html
 - https://blogs.sas.com/content/operations/2017/02/24/solving-kakuro-puzzles-with-sasor/
