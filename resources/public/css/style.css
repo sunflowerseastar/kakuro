@@ -3,6 +3,9 @@ body {
   width: 100%;
   margin: 0;
   font-family: 'iosevka ss05', Menlo, 'Andale Mono', monospace;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
 }
 #app {
   height: 100vh;
@@ -37,6 +40,7 @@ body {
   padding: 0 0.4em;
   font-family: serif;
   font-size: 0.8em;
+  transition: opacity 0.4s ease-in-out;
 }
 .minus,
 .plus {
@@ -380,4 +384,7 @@ button:active {
 .em {
   font-style: italic;
   cursor: default;
+}
+.dimmed {
+  opacity: 0.5;
 }

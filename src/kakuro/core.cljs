@@ -13,7 +13,9 @@
 ;;   - :entry
 ;;   - :flag
 ;;   Each flag is {:direction :down|:right :sum int :distance int}"
-(def board (atom (util/flags-to-be-solved->board boards/para-11-1)))
+(def current-board-index (atom 0))
+(def is-board-modified (atom false))
+(def board (atom (util/flags-to-be-solved->board (nth boards/boards @current-board-index))))
 
 ;; "ui"
 (def is-requesting (atom false))
@@ -40,8 +42,18 @@
                        vec))))
 
 (defn clear! []
-  (do (clear-ui!)
+  (do (reset! is-board-modified true)
+      (clear-ui!)
       (clear-board!)))
+
+(defn previous-or-next-board! [dec-or-inc]
+  (let [new-board-index (mod (dec-or-inc @current-board-index) (count boards/boards))]
+    (do (clear-ui!)
+        (clear-board!)
+        (reset! current-board-index new-board-index)
+        (reset-board! (-> (nth boards/boards new-board-index)
+                          (util/flags-to-be-solved->board)))
+        (reset! is-board-modified false))))
 
 (defn grid-to-font-size [grid]
   (cond
@@ -169,9 +181,10 @@
          [:div.board-container
           [:div.above-board
            [:div.left
-            [:a.arrow-left {:on-click #(spyx "left")} "◀"]
-            [:a.arrow-right {:on-click #(spyx "right")} "▶"]
-            [:span.em "board 1 of x"]]
+            [:a.arrow-left {:on-click #(previous-or-next-board! dec)} "◀"]
+            [:a.arrow-right {:on-click #(previous-or-next-board! inc)} "▶"]
+            [:span.em {:class (when @is-board-modified "dimmed")}
+             (str "board " (inc @current-board-index) " of " (count boards/boards))]]
            [:div.right
             [:a.minus {:on-click #(spyx "minus")} "–"]
             [:a.plus {:on-click #(spyx "minus")} "+"]]]
