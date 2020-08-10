@@ -183,11 +183,15 @@
            [:div.left
             [:a.arrow-left {:on-click #(previous-or-next-board! dec)} "◀"]
             [:a.arrow-right {:on-click #(previous-or-next-board! inc)} "▶"]
-            [:span.em {:class (when @is-board-modified "dimmed")}
+            [:span.em {:class (when @is-board-modified "is-dimmed")}
              (str "board " (inc @current-board-index) " of " (count boards/boards))]]
-           [:div.right
-            [:a.minus {:on-click #(spyx "minus")} "–"]
-            [:a.plus {:on-click #(spyx "minus")} "+"]]]
+           (let [height (count @board)
+                 width (-> @board first count)]
+             [:div.right
+              [:a.minus {:class (when (not (and (> width 2) (> height 2))) "is-disabled")
+                         :on-click #(do (clear!) (reset-board! (util/decrease-board-size @board)))} "–"]
+              [:a.plus {:class (when (not (and (< width 14) (< height 14))) "is-disabled")
+                        :on-click #(do (clear!) (reset-board! (util/increase-board-size @board)))} "+"]])]
           [:div.board
            {:style {:grid-template-rows (str "repeat(14, " (/ 100 (count @board)) "%)")}}
            (let [x-shape (count (first @board))

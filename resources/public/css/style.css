@@ -48,21 +48,34 @@ body {
   top: 3px;
   right: -5px;
   padding: 2px 8px;
+  color: #888;
+  transition: opacity 0.4s ease-in-out;
   cursor: pointer;
+}
+.minus:hover,
+.plus:hover {
+  color: #333;
+}
+.minus:active,
+.plus:active {
+  color: #000;
 }
 .mode-selection {
   position: relative;
   right: -5px;
   padding: 3px 2px;
+  color: #bbb;
+  transition: color 0.4s ease-in-out;
   cursor: pointer;
-  color: #444;
 }
 .mode-selection:hover {
+  color: #333;
+}
+.mode-selection:active {
   color: #000;
 }
 .mode-selection.is-selected {
-  color: #000;
-  text-decoration: underline;
+  color: #333;
   cursor: default;
 }
 .above-board .right {
@@ -385,6 +398,11 @@ button:active {
   font-style: italic;
   cursor: default;
 }
-.dimmed {
+.is-dimmed {
   opacity: 0.5;
+}
+.is-disabled {
+  opacity: 0.3;
+  pointer-events: none;
+  cursor: default;
 }
