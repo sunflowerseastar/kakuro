@@ -179,7 +179,7 @@
       (fn [this]
         [:div.main
          [:div.board-container
-          [:div.above-board
+          [:div.above-board.constrain-width
            [:div.left
             [:a.arrow-left {:on-click #(previous-or-next-board! dec)} "◀"]
             [:a.arrow-right {:on-click #(previous-or-next-board! inc)} "▶"]
@@ -192,7 +192,7 @@
                          :on-click #(do (clear!) (reset-board! (util/decrease-board-size @board)))} "–"]
               [:a.plus {:class (when (not (and (< width 14) (< height 14))) "is-disabled")
                         :on-click #(do (clear!) (reset-board! (util/increase-board-size @board)))} "+"]])]
-          [:div.board
+          [:div.board.constrain-width
            {:style {:grid-template-rows (str "repeat(14, " (/ 100 (count @board)) "%)")}}
            (let [x-shape (count (first @board))
                  y-shape (count @board)
@@ -205,7 +205,7 @@
                    [square-c x y square on-click-square! click-mode on-dbl-click-square! update-sum-fn x-shape y-shape])
                  row))
               @board))]
-          [:div.below-board
+          [:div.below-board.constrain-width
            [:div.left
             [:a.arrow-left {:on-click #(spyx "left")} "◀"]
             [:a.arrow-right {:on-click #(spyx "right")} "▶"]
