@@ -21,6 +21,9 @@
 (def is-no-solution (atom false))
 (def is-success (atom false))
 
+;; :clue | :normal
+(def click-mode (atom :normal))
+
 (defn clear-ui! []
   (do (reset! is-requesting false)
       (reset! is-timeout false)
@@ -52,11 +55,11 @@
     (> grid 5) 16
     :else 20))
 
-(defn square-c [x y {:keys [flags type] :as square} click-fn dbl-click-fn update-sum-fn x-shape y-shape]
+(defn square-c [x y {:keys [flags type] :as square} click-fn click-mode dbl-click-fn update-sum-fn x-shape y-shape]
   [:div.square
    {:class [type (when (= (dec y-shape) y) "board-edge-bottom")
             (when (= (dec x-shape) x) "board-edge-right")]
-    :on-click #(click-fn x y square)
+    :on-click #(click-fn x y square click-mode)
     :on-double-click #(dbl-click-fn x y square)
     :style {:grid-column (+ x 1) :grid-row (+ y 1)
             :font-size (str (grid-to-font-size y-shape) "px")}}
@@ -111,13 +114,17 @@
                 :flags {:down {:sum 1 :distance distance-down}
                         :right {:sum 1 :distance distance-right}}}))))
 
-(defn on-click-square [x y {:keys [type]}]
-  (cond (= type :entry)
-        (change-square-type! x y :black)
-        (and (= type :black) (not= 0 x) (not= 0 y))
-        (change-square-type! x y :entry)))
+(defn on-click-square! [x y {:keys [type]} click-mode]
+  (if (= click-mode :clue)
+    (if (= type :flag)
+      (change-square-type! x y :black)
+      (change-square-to-flag! x y))
+    (cond (= type :entry)
+          (change-square-type! x y :black)
+          (and (= type :black) (not= 0 x) (not= 0 y))
+          (change-square-type! x y :entry))))
 
-(defn on-dbl-click-square [x y {:keys [type]}]
+(defn on-dbl-click-square! [x y {:keys [type]}]
   (if (= type :flag)
     (change-square-type! x y :black)
     (change-square-to-flag! x y)))
@@ -171,13 +178,14 @@
           [:div.board
            {:style {:grid-template-rows (str "repeat(14, " (/ 100 (count @board)) "%)")}}
            (let [x-shape (count (first @board))
-                 y-shape (count @board)]
+                 y-shape (count @board)
+                 click-mode @click-mode]
              (map-indexed
               (fn [y row]
                 (map-indexed
                  (fn [x square]
                    ^{:key (str x y)}
-                   [square-c x y square on-click-square on-dbl-click-square update-sum-fn x-shape y-shape])
+                   [square-c x y square on-click-square! click-mode on-dbl-click-square! update-sum-fn x-shape y-shape])
                  row))
               @board))]
           [:div.below-board
@@ -185,9 +193,17 @@
             [:a.arrow-left {:on-click #(spyx "left")} "◀"]
             [:a.arrow-right {:on-click #(spyx "right")} "▶"]
             [:span.em "solution 1 of x"]]
-           [:div.right
-            [:a.selection.selected [:span "clue"]]
-            [:a.selection [:span "white/black"]]]]]
+           (let [is-clue-mode (= @click-mode :clue)
+                 is-normal-mode (= @click-mode :normal)]
+             [:div.right
+              [:a.mode-selection {:class (when is-clue-mode "is-selected")
+                                  :on-click #(when is-normal-mode
+                                               (reset! click-mode :clue))}
+               [:span "clue"]]
+              [:a.mode-selection {:class (when is-normal-mode "is-selected")
+                                  :on-click #(when is-clue-mode
+                                               (reset! click-mode :normal))}
+               [:span "normal"]]])]]
          [:div.button-container
           [:div.button-indicator
            {:class [(when @is-success "is-success")
