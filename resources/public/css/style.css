@@ -27,6 +27,63 @@ body {
     padding: 1em 0;
   }
 }
+.above-board,
+.below-board {
+  display: flex;
+  padding: 0.2em 0 0.4em;
+}
+.above-board span,
+.below-board span {
+  padding: 0 0.4em;
+  font-family: serif;
+  font-size: 0.8em;
+}
+.minus,
+.plus {
+  position: relative;
+  top: 3px;
+  right: -5px;
+  padding: 2px 8px;
+  cursor: pointer;
+}
+.selection {
+  position: relative;
+  right: -5px;
+  padding: 3px 2px;
+  cursor: pointer;
+}
+.selected {
+  text-decoration: underline;
+}
+.above-board .right {
+  flex: 1;
+  text-align: right;
+}
+.arrow-left,
+.arrow-right {
+  position: relative;
+  padding: 3px 7px;
+  font-size: 1.1em;
+  cursor: pointer;
+}
+@media (min-width: 400px) {
+  .arrow-left,
+  .arrow-right {
+    padding: 2px 6px;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+}
+.below-board {
+}
+.below-board .left {
+  flex: 1;
+  opacity: 0;
+  pointer-events: none;
+}
+.below-board .right {
+  text-align: right;
+}
 .board {
   position: relative;
   display: grid;
@@ -94,11 +151,11 @@ body {
 .board-edge-bottom .entry-inner {
   border-bottom: 0;
 }
-@media (min-width: 400px) {
-  .entry-inner {
-    font-size: 1.25em;
-    border-bottom: 0;
-  }
+.entry-inner {
+  font-family: 'Proxima Nova', 'San Francisco', 'Helvetica Neue', Helvetica,
+    Arial, sans-serif;
+  font-size: 1.25em;
+  border-bottom: 0;
 }
 @media (min-width: 768px) {
   .entry-inner {
@@ -155,6 +212,8 @@ body {
   z-index: 1;
   background: transparent;
   color: white;
+  font-family: 'Proxima Nova', 'San Francisco', 'Helvetica Neue', Helvetica,
+    Arial, sans-serif;
   border: 0;
   border-radius: 0;
   padding: 0 2px 1px;
@@ -311,4 +370,8 @@ button:hover {
 }
 button:active {
   top: 0px;
+}
+.em {
+  font-style: italic;
+  cursor: default;
 }

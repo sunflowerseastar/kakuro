@@ -160,6 +160,14 @@
       (fn [this]
         [:div.main
          [:div.board-container
+          [:div.above-board
+           [:div.left
+            [:a.arrow-left {:on-click #(spyx "left")} "◀"]
+            [:a.arrow-right {:on-click #(spyx "right")} "▶"]
+            [:span.em "board 1 of x"]]
+           [:div.right
+            [:a.minus {:on-click #(spyx "minus")} "–"]
+            [:a.plus {:on-click #(spyx "minus")} "+"]]]
           [:div.board
            {:style {:grid-template-rows (str "repeat(14, " (/ 100 (count @board)) "%)")}}
            (let [x-shape (count (first @board))
@@ -171,7 +179,15 @@
                    ^{:key (str x y)}
                    [square-c x y square on-click-square on-dbl-click-square update-sum-fn x-shape y-shape])
                  row))
-              @board))]]
+              @board))]
+          [:div.below-board
+           [:div.left
+            [:a.arrow-left {:on-click #(spyx "left")} "◀"]
+            [:a.arrow-right {:on-click #(spyx "right")} "▶"]
+            [:span.em "solution 1 of x"]]
+           [:div.right
+            [:a.selection.selected [:span "clue"]]
+            [:a.selection [:span "white/black"]]]]]
          [:div.button-container
           [:div.button-indicator
            {:class [(when @is-success "is-success")
