@@ -27,19 +27,7 @@
       (if (not= (:type sq) :entry) n
           (recur (inc x) y (inc n))))))
 
-(defn x-distance-from-summand [b x y]
-  (loop [x x y y n 0]
-    (let [sq (get-square b (dec x) y)]
-      (if (= (:type sq) :clue) n
-          (recur (dec x) y (inc n))))))
-
-(defn y-distance-from-summand [b x y]
-  (loop [x x y y n 0]
-    (let [sq (get-square b x (dec y))]
-      (if (= (:type sq) :clue) n
-          (recur x (dec y) (inc n))))))
-
-(defn board-solution->board-with-solutions [board solution]
+(defn solution-vector->board-with-solutions [board solution]
   (let [x-shape (count (first board))
         board-flattened (flatten board)]
     (->> (loop [squares board-flattened acc [] n 0]

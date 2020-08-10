@@ -104,7 +104,7 @@
                              (if (empty? solution)
                                (reset! is-no-solution true)
                                (do (reset! is-success true)
-                                   (reset-board! (util/board-solution->board-with-solutions @board solution))))))
+                                   (reset-board! (util/solution-vector->board-with-solutions @board solution))))))
              :error-handler #(do (reset! is-requesting false)
                                  (reset! is-timeout true)
                                  (.error js/console (str "error: " %)))})))

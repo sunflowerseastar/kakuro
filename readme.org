@@ -37,7 +37,7 @@ This board's "verbose" data structure is a nested vector—rows of squares, each
 
 Aside: the x/y's are redundant, in the sense that they could be calculated as their respective matrix positions. However, they are explicitly maintained because it's useful when elements need to know their x/y values late in a computational chain, and it would otherwise require extra effort to thread the x/y's along with all the functions or manage a state.
 
-*Distance* means the number of corresponding entry squares.
+*Distance* means the number of corresponding entry squares. It can be thought of as "length."
 
 Clues are the most important part because a full board can be extrapolated just from them. Our example board can be represented by the following clue notation:
 
@@ -53,11 +53,10 @@ Clues are the most important part because a full board can be extrapolated just 
 
 Note that one square can have two clues, so the number of /clue squares/ and /clues/ is different in some scenarios.
 
-Helper functions can transform between the verbose form and the compact, clue notation form:
+Helper functions can transform between the verbose form and the compact clue notation form:
 
 #+begin_src clojure
 (util/clue-notation->board clue-notation-example)
-
 (util/board->clue-notation verbose-board-example)
 #+end_src
 
@@ -71,7 +70,7 @@ Clue notation is passed over the wire to the solver:
        :error-handler ...})
 #+end_src
 
-...which returns a solution:
+...which returns a *solution vector*:
 
 #+begin_src clojure
 [1 2 3 4]
@@ -84,7 +83,7 @@ The numbers in the solution correspond to the values in the entry squares:
  [3 4]]
 #+end_src
 
-Final result:
+Final result, with the help of ~solution-vector->board-with-solutions~:
 
 |      | :d 4 | :d 6 |
 | :r 3 |    1 |    2 |
