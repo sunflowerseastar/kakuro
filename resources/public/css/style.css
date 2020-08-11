@@ -33,7 +33,7 @@ body {
 .above-board,
 .below-board {
   display: flex;
-  padding: 0.2em 0 0.4em;
+  padding: 0.3em 0;
 }
 .above-board span,
 .below-board span {
@@ -78,6 +78,10 @@ body {
   color: #333;
   cursor: default;
 }
+.above-board .left {
+  position: relative;
+  left: -3px;
+}
 .above-board .right {
   flex: 1;
   text-align: right;
@@ -101,8 +105,15 @@ body {
 }
 .below-board .left {
   flex: 1;
+  position: relative;
+  left: -3px;
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+}
+.below-board .left.is-hidden {
   opacity: 0;
   pointer-events: none;
+  cursor: default;
 }
 .below-board .right {
   text-align: right;

@@ -17,6 +17,9 @@
 (def is-board-modified (atom false))
 (def board (atom (util/clue-notation->board (nth boards/boards @current-board-index))))
 
+(def solutions (atom '()))
+(def current-solution-index (atom 0))
+
 ;; "ui"
 (def is-requesting (atom false))
 (def is-timeout (atom false))
@@ -30,7 +33,9 @@
   (do (reset! is-requesting false)
       (reset! is-timeout false)
       (reset! is-no-solution false)
-      (reset! is-success false)))
+      (reset! is-success false)
+      (reset! solutions '())
+      (reset! current-solution-index 0)))
 
 (defn reset-board! [new-board]
   (reset! board new-board))
@@ -54,6 +59,12 @@
         (reset-board! (-> (nth boards/boards new-board-index)
                           (util/clue-notation->board)))
         (reset! is-board-modified false))))
+
+(defn previous-or-next-solution! [dec-or-inc]
+  (let [new-solution-index (mod (dec-or-inc @current-solution-index) (count @solutions))]
+    (do (reset! current-solution-index new-solution-index)
+        (reset-board! (->> (nth @solutions new-solution-index)
+                           (util/solution-vector->board-with-solutions @board))))))
 
 (defn grid-to-font-size [grid]
   (cond
@@ -99,12 +110,14 @@
       (POST "/api/solve"
             {:headers {"content-type" "application/edn"}
              :body (str "{:clue-notation " clue-notation "}")
-             :handler #(let [solution (:solution %)]
+             :handler #(let [new-solutions (:solution %)
+                             new-solution (first new-solutions)]
                          (do (reset! is-requesting false)
-                             (if (empty? solution)
+                             (if (empty? new-solution)
                                (reset! is-no-solution true)
                                (do (reset! is-success true)
-                                   (reset-board! (util/solution-vector->board-with-solutions @board solution))))))
+                                   (reset! solutions new-solutions)
+                                   (reset-board! (util/solution-vector->board-with-solutions @board new-solution))))))
              :error-handler #(do (reset! is-requesting false)
                                  (reset! is-timeout true)
                                  (.error js/console (str "error: " %)))})))
@@ -207,9 +220,15 @@
               @board))]
           [:div.below-board.constrain-width
            [:div.left
-            [:a.arrow-left {:on-click #(spyx "left")} "◀"]
-            [:a.arrow-right {:on-click #(spyx "right")} "▶"]
-            [:span.em "solution 1 of x"]]
+            {:class (when (and (false? @is-timeout) (false? @is-no-solution) (empty? @solutions)) "is-hidden")}
+            (cond (true? @is-timeout) [:span.em "timeout"]
+                  (true? @is-no-solution) [:span.em "no solutions found"]
+                  (= (count @solutions) 1) [:span.em "1 solution found"]
+                  (> (count @solutions) 1)
+                  [:<>
+                   [:a.arrow-left {:on-click #(previous-or-next-solution! dec)} "◀"]
+                   [:a.arrow-right {:on-click #(previous-or-next-solution! inc)} "▶"]
+                   [:span.em (str "solution " (inc @current-solution-index) " of " (count @solutions))]])]
            (let [is-clue-mode (= @click-mode :clue)
                  is-normal-mode (= @click-mode :normal)]
              [:div.right
