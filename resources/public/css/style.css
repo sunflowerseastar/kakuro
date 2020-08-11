@@ -249,40 +249,39 @@ body {
 .clue-input {
   position: absolute;
   width: 50%;
-  /* "base" font-size is in div.square's markup */
-  font-size: 0.9em;
-  z-index: 1;
-  background: transparent;
-  color: white;
+  height: 50%;
+  padding: 0;
   font-family: 'Proxima Nova', 'San Francisco', 'Helvetica Neue', Helvetica,
     Arial, sans-serif;
+  color: white;
+  text-align: center;
+  background: transparent;
   border: 0;
   border-radius: 0;
-  padding: 0 2px 1px;
-  text-align: center;
+  z-index: 1;
+
+  /* "base" font-size is in div.square's markup, */
+  /* this is a "multiplier," sorta =) */
+  font-size: 0.9em;
 }
 @media (min-width: 400px) {
   .clue-input {
     font-size: 1em;
-    padding: 1px 2px;
   }
 }
 @media (min-width: 500px) {
   .clue-input {
     font-size: 1.06em;
-    padding: 2px;
   }
 }
 @media (min-width: 768px) {
   .clue-input {
     font-size: 1.1em;
-    padding: 2px 3px;
   }
 }
 @media (min-width: 1200px) {
   .clue-input {
     font-size: 1.18em;
-    padding: 2px 4px;
   }
 }
 @media (min-width: 1400px) {
@@ -296,23 +295,12 @@ body {
   }
 }
 .clue-input.down {
-  bottom: -1px;
-  left: 0;
-  text-align: left;
+  bottom: -2px;
+  left: 2px;
 }
 .clue-input.right {
-  right: -1px;
-  top: 0;
-  text-align: right;
-}
-@media (min-width: 1200px) {
-  .clue-input.down {
-    left: 3px;
-    bottom: 0;
-  }
-  .clue-input.right {
-    right: 0;
-  }
+  right: 0;
+  top: 1px;
 }
 .clue-input.down.hide-down,
 .clue-input.right.hide-right {

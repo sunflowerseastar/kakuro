@@ -73,10 +73,10 @@
     (> grid 10) 11
     (> grid 9) 12
     (> grid 8) 13
-    (> grid 7) 14
-    (> grid 6) 15
-    (> grid 5) 16
-    :else 20))
+    (> grid 7) 15
+    (> grid 6) 18
+    (> grid 5) 22
+    :else 25))
 
 (defn square-c [x y {:keys [clues type] :as square} click-fn click-mode dbl-click-fn update-sum-fn x-shape y-shape]
   [:div.square
