@@ -104,23 +104,25 @@
          (= type :entry)
          [:span.entry-inner (:value square)])])
 
-(defn post-request-solution [clue-notation]
-  ;; (spyx "post-request-solution" clue-notation)
-  (do (reset! is-requesting true)
-      (POST "/api/solve"
-            {:headers {"content-type" "application/edn"}
-             :body (str "{:clue-notation " clue-notation "}")
-             :handler #(let [new-solutions (:solution %)
-                             new-solution (first new-solutions)]
-                         (do (reset! is-requesting false)
-                             (if (empty? new-solution)
-                               (reset! is-no-solution true)
-                               (do (reset! is-success true)
-                                   (reset! solutions new-solutions)
-                                   (reset-board! (util/solution-vector->board-with-solutions @board new-solution))))))
-             :error-handler #(do (reset! is-requesting false)
-                                 (reset! is-timeout true)
-                                 (.error js/console (str "error: " %)))})))
+(defn post-request-solution [clue-notation & {:keys [all-solutions]
+                                              :or {all-solutions false}}]
+  (let [api (if all-solutions "/api/solve-all"
+                "/api/solve")]
+    (do (reset! is-requesting true)
+        (POST api
+              {:headers {"content-type" "application/edn"}
+               :body (str "{:clue-notation " clue-notation "}")
+               :handler #(let [new-solutions (:solution %)
+                               new-solution (first new-solutions)]
+                           (do (reset! is-requesting false)
+                               (if (empty? new-solution)
+                                 (reset! is-no-solution true)
+                                 (do (reset! is-success true)
+                                     (reset! solutions new-solutions)
+                                     (reset-board! (util/solution-vector->board-with-solutions @board new-solution))))))
+               :error-handler #(do (reset! is-requesting false)
+                                   (reset! is-timeout true)
+                                   (.error js/console (str "error: " %)))}))))
 
 (defn change-square-type! [x y new-type]
   (do (clear!)
@@ -165,13 +167,19 @@
     (reset-board! new-board)))
 
 (defn main []
-  (letfn [(request-solution []
+  (letfn [(request-all-solutions []
+            (do (fix-board! @board)
+                (let [clue-notation (util/board->clue-notation @board)]
+                  (when (not (empty? clue-notation))
+                    (post-request-solution clue-notation :all-solutions true)))))
+          (request-solution []
             (do (fix-board! @board)
                 (let [clue-notation (util/board->clue-notation @board)]
                   (when (not (empty? clue-notation))
                     (post-request-solution clue-notation)))))
           (keyboard-listeners [e]
-            (let [is-enter (= (.-keyCode e) 13)
+            (let [shift (.-shiftKey e)
+                  is-enter (= (.-keyCode e) 13)
                   is-c (= (.-keyCode e) 67)
                   is-f (= (.-keyCode e) 70)
                   is-s (= (.-keyCode e) 83)
@@ -183,6 +191,7 @@
                   width (-> @board first count)]
               (cond is-c (clear!)
                     is-f (fix-board! @board)
+                    (or (and shift is-enter) (and shift is-s)) (request-all-solutions)
                     (or is-enter is-s) (request-solution)
                     (or is-minus is-comma) (when (and (> width 2) (> height 2))
                                              (do (clear!) (reset-board! (util/decrease-board-size @board))))
@@ -252,7 +261,9 @@
                                            (false? @is-timeout)
                                            (false? @is-no-solution)
                                            (false? @is-requesting))
-                                  (request-solution))}
+                                  (if (.-shiftKey %)
+                                    (request-all-solutions)
+                                    (request-solution)))}
             "solve"]]]])})))
 
 (defn mount-app-element []
