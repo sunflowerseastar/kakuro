@@ -167,7 +167,9 @@
 (defn main []
   (letfn [(request-solution []
             (do (fix-board! @board)
-                (post-request-solution (util/board->clue-notation @board))))
+                (let [clue-notation (util/board->clue-notation @board)]
+                  (when (not (empty? clue-notation))
+                    (post-request-solution clue-notation)))))
           (keyboard-listeners [e]
             (let [is-enter (= (.-keyCode e) 13)
                   is-c (= (.-keyCode e) 67)
