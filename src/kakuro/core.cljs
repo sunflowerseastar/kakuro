@@ -25,6 +25,7 @@
 (def is-timeout (atom false))
 (def is-no-solution (atom false))
 (def is-success (atom false))
+(def has-initially-loaded (atom false))
 
 ;; :clue | :normal
 (def click-mode (atom :normal))
@@ -202,10 +203,13 @@
                     (or is-plus is-period) (when (and (< width 14) (< height 14))
                                              (do (clear!) (reset-board! (util/increase-board-size @board)))))))]
     (create-class
-     {:component-did-mount (fn [] (.addEventListener js/document "keydown" keyboard-listeners))
+     {:component-did-mount
+      (fn [] (do (js/setTimeout #(reset! has-initially-loaded true) 0)
+                 (.addEventListener js/document "keydown" keyboard-listeners)))
       :reagent-render
       (fn [this]
         [:div.main
+         {:class (if @has-initially-loaded "has-initially-loaded")}
          [:div.board-container
           [:div.above-board.constrain-width
            [:div.left

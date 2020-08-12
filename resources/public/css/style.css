@@ -16,6 +16,11 @@ body {
   flex-direction: column;
   justify-content: flex-end;
   box-sizing: border-box;
+  opacity: 0;
+  transition: opacity 1.6s ease-in-out;
+}
+.main.has-initially-loaded {
+  opacity: 1;
 }
 .board-container {
   width: 90vw;
