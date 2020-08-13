@@ -68,11 +68,10 @@
   (filter #(= (:type %) type) xs))
 
 (defn possible-sum? [n]
-  (< 0 n (reduce + (range 1 10))))
+  (< 0 n (inc (reduce + (range 1 10)))))
 
 (defn clue-square->clue-notation
-  "ex. {:type :clue, :x 1, :y 0, :clues {:down {:sum 4 :distance 2}}} -> ([:d 1 0 4 2])
-  mapcat is receiving ex. [:down {:sum 4 :distance 2}]"
+  "Convert a single square's clues into clue notation."
   [{:keys [x y clues]}]
   (->> clues
        (filter (fn [[direction {:keys [sum distance]}]]
@@ -81,6 +80,7 @@
               [(if (= direction :down) :d :r) x y sum distance]))))
 
 (defn board->clue-notation
+  "Convert a matrix of squares into a seq of clue-notation."
   [board]
   (->> board
        (mapcat (partial filter-by-type :clue))

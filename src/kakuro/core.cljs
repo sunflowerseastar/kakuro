@@ -129,9 +129,6 @@
   (do (clear!)
       (swap! board assoc-in [y x] {:type new-type :x x :y y :value nil})))
 
-(defn new-clue [direction]
-  {direction {:sum 0 :distance 0}})
-
 (defn change-square-to-clue! [x y]
   (let [b @board
         distance-down (util/get-num-entries-below b x y)
@@ -157,7 +154,7 @@
     (change-square-type! x y :black)
     (change-square-to-clue! x y)))
 
-(defn update-sum-fn [x y e]
+(defn update-sum-fn! [x y e]
   (let [new-sum (-> e .-target .-value js/parseInt)
         direction (.getAttribute (-> e .-target) "data-direction")]
     (do (clear!)
@@ -234,7 +231,7 @@
                 (map-indexed
                  (fn [x square]
                    ^{:key (str x y)}
-                   [square-c x y square on-click-square! click-mode on-dbl-click-square! update-sum-fn x-shape y-shape])
+                   [square-c x y square on-click-square! click-mode on-dbl-click-square! update-sum-fn! x-shape y-shape])
                  row))
               @board))]
           [:div.below-board.constrain-width
