@@ -260,16 +260,21 @@ body {
 
   /* "base" font-size is in div.square's markup, */
   /* this is a "multiplier," sorta =) */
-  font-size: 0.9em;
+  font-size: 0.7em;
+}
+@media (min-width: 360px) {
+  .clue-input {
+    font-size: 0.8em;
+  }
 }
 @media (min-width: 400px) {
   .clue-input {
-    font-size: 1em;
+    font-size: 0.9em;
   }
 }
 @media (min-width: 500px) {
   .clue-input {
-    font-size: 1.06em;
+    font-size: 1em;
   }
 }
 @media (min-width: 768px) {
