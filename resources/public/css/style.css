@@ -1,3 +1,7 @@
+:root {
+  --transition-1: opacity 0.2s ease-in-out;
+  --transition-2: opacity 0.6s ease-in-out;
+}
 body {
   position: fixed;
   width: 100%;
@@ -17,7 +21,7 @@ body {
   justify-content: flex-end;
   box-sizing: border-box;
   opacity: 0;
-  transition: opacity 1.6s ease-in-out;
+  transition: var(--transition-2);
 }
 .main.has-initially-loaded {
   opacity: 1;
@@ -45,7 +49,7 @@ body {
   padding: 0 0.4em;
   font-family: serif;
   font-size: 0.8em;
-  transition: opacity 0.4s ease-in-out;
+  transition: var(--transition-1);
 }
 .minus,
 .plus {
@@ -54,7 +58,7 @@ body {
   right: -5px;
   padding: 2px 8px;
   color: #888;
-  transition: opacity 0.4s ease-in-out;
+  transition: var(--transition-1);
   cursor: pointer;
 }
 .minus:hover,
@@ -70,7 +74,7 @@ body {
   right: -5px;
   padding: 3px 2px;
   color: #bbb;
-  transition: color 0.4s ease-in-out;
+  transition: var(--transition-1);
   cursor: pointer;
 }
 .mode-selection:hover {
@@ -113,7 +117,7 @@ body {
   position: relative;
   left: -3px;
   opacity: 1;
-  transition: opacity 0.2s ease-in-out;
+  transition: var(--transition-1);
 }
 .below-board .left.is-hidden {
   opacity: 0;
