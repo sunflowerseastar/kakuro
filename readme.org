@@ -6,7 +6,17 @@ This repo is a front-end for the [[https://github.com/sunflowerseastar/kakuro-se
 
 * Quick Start
 
-~lein fig:min~, navigate to ~localhost:9500~.
+#+begin_src sh
+# dev, localhost:9500
+lein fig:build
+
+# build
+lein fig:min
+
+# test
+lein fig:test
+#+end_src
+~~, navigate to ~localhost:9500~.
 
 * High Level Overview
 
@@ -19,6 +29,10 @@ Here's a minimal example board:
 |      | :d 4 | :d 6 |
 | :r 3 |      |      |
 | :r 7 |      |      |
+
+`:d 4` means "all the open entry squares below this ('down' from here) will sum to 4." Similarly, the two entry squares to the right of `:r 3` should add up to 3.
+
+** Verbose Board versus Clue Notation
 
 This board's "verbose" data structure is a nested vector—rows of squares, each of which is type ~:black~, ~:entry~, or ~:clue~:
 
@@ -39,7 +53,7 @@ Aside: the x/y's are redundant, in the sense that they could be calculated as th
 
 *Distance* means the number of corresponding entry squares. It can be thought of as "length."
 
-Clues are the most important part because a full board can be extrapolated just from them. Our example board can be represented by the following clue notation:
+Clues are the most important part because a full "verbose" board can be extrapolated just from them. Our example board can be represented by the following clue notation:
 
 #+begin_src clojure
 ;; [:direction x y sum distance]
@@ -60,7 +74,9 @@ Helper functions can transform between the verbose form and the compact clue not
 (util/board->clue-notation verbose-board-example)
 #+end_src
 
-Clue notation is passed over the wire to the solver:
+** Solving
+
+Clue notation is passed over the wire to the [[https://github.com/sunflowerseastar/kakuro-server][kakuro-server]]:
 
 #+begin_src clojure
 (POST "/api/solve"
